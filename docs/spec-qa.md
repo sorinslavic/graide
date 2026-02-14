@@ -4,8 +4,10 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 5
-- **Remaining**: 1
+- **Answered**: 6 ✅
+- **Remaining**: 0
+
+**🎉 Specification Complete!** All foundational questions answered.
 
 ---
 
@@ -231,8 +233,51 @@ Eventually could build full student login system:
 
 ### Q6: What AI capabilities are most valuable?
 **Category**: AI Functionality
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**All capabilities are valuable, but prioritized in phases:**
+
+**Phase 1 (MVP) - Core Grading:**
+The fundamental AI workflow must be:
+1. **Look at photo(s)** of student's test (one or multiple pages)
+2. **Analyze calculations** - determine which work is right or wrong
+3. **Assign points** for each exercise/question
+4. **Calculate final grade**
+
+This is the baseline - without this, the app doesn't save time.
+
+**Phase 2 - Pattern Analysis & Recommendations:**
+Once basic grading works, add intelligence:
+- **Identify trends in mistakes**
+  - Find common errors across multiple students
+  - Detect class-wide misconceptions
+- **Suggest chapters to revisit**
+  - Recommend what each student should review
+  - Personalized learning guidance based on their specific mistakes
+
+**Phase 3+ - Advanced Capabilities:**
+
+1. **Specialized OCR per student**
+   - Each student has vastly different handwriting
+   - Train/tune OCR to recognize individual student's writing style
+   - Improves accuracy over time for each student
+
+2. **Subject-specific AI correctors**
+   - **Math** (MVP focus): Calculations, formulas, geometry
+   - **Language/Grammar** (future): Essay grading, grammar checking
+   - **History** (future): Fact checking, timeline understanding
+   - **Geography** (future): Map reading, location identification
+   - **Other subjects** (future): Expand as needed
+
+**Key Insight:**
+The AI must handle the complete grading workflow from photo → grade, not just assist with parts of it. The goal is to reduce 4-6 hours of grading to minutes while maintaining accuracy.
+
+**Technical Implication:**
+- Use Vision AI (GPT-4 Vision, Claude Vision, or similar) for photo analysis
+- Start with multi-step problem evaluation (not just answer checking)
+- Build pattern detection into data model from day one
+- Design for multi-subject expansion (even though MVP is math-only)
 
 ---
 

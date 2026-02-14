@@ -25,7 +25,7 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 **Current Phase**: Specification & Design
 - ✅ Requirements gathering complete
 - ✅ Architecture designed (Google Sheets + Drive)
-- 🔄 Building specification (4/6 questions answered)
+- ✅ Specification complete (6/6 questions answered)
 - ⏳ Development starts soon
 
 ## Quick Start
