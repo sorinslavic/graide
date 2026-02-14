@@ -4,8 +4,8 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 3
-- **Remaining**: 3
+- **Answered**: 4
+- **Remaining**: 2
 
 ---
 
@@ -120,8 +120,70 @@ The goal isn't just recording grades - it's retaining knowledge of each student'
 
 ### Q4: What platform would work best?
 **Category**: Platform
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Platform Decision: Web App (Local Hosting)**
+
+**Primary Choice:**
+- **Web application** running locally on teacher's laptop
+- Access via `localhost:3000` (no internet deployment needed)
+- Built with React/Vue + Vite for fast development
+
+**Data Storage Architecture:**
+1. **Google Sheets as Database**
+   - Teacher can view/edit all data directly in familiar spreadsheet interface
+   - No separate database server needed
+   - Built-in backup and version history
+   - Easy data export to Excel
+
+   **Sheets Structure:**
+   - Sheet 1: Teachers
+   - Sheet 2: Classes
+   - Sheet 3: Students
+   - Sheet 4: Tests
+   - Sheet 5: Grades & Mistakes
+
+2. **Google Drive for Photos**
+   - Teacher uploads test photos to her own Google Drive
+   - App references photos via Drive API
+   - No separate photo storage needed
+   - She owns all her data
+
+**Multi-Teacher Support:**
+- Shared Google Drive approach (one Drive for the whole school)
+- Folder structure separates each teacher's data
+- Teachers access only their classes through the app
+- School admin can access full Drive if needed
+
+**Setup Process:**
+1. Clone repository
+2. Add Google API keys to `.env` file
+3. Run `npm install && npm run dev`
+4. Open browser to `localhost:3000`
+5. Grant Google permissions (Sheets + Drive access)
+6. Start using
+
+**Key Benefits:**
+- ✅ Zero hosting costs
+- ✅ Zero deployment complexity
+- ✅ Teacher controls all data
+- ✅ Familiar data editing (Google Sheets = Excel)
+- ✅ Works offline (after initial data load)
+- ✅ No vendor lock-in
+- ✅ Easy backup (copy the Sheet)
+
+**Technical Stack:**
+- Frontend: React + Vite
+- Database: Google Sheets API
+- Storage: Google Drive API
+- Auth: Google OAuth 2.0
+- No backend server required
+
+**Scalability:**
+- MVP: Single teacher, runs locally
+- Future: Could deploy to web hosting if needed
+- Current approach supports multiple teachers sharing one Drive
 
 ---
 
