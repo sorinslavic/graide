@@ -4,8 +4,8 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 2
-- **Remaining**: 4
+- **Answered**: 3
+- **Remaining**: 3
 
 ---
 
@@ -75,8 +75,46 @@ The goal isn't just recording grades - it's retaining knowledge of each student'
 
 ### Q3: What types of math questions does she grade most often?
 **Category**: Content Types
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Grade Level & Location:**
+- Math teacher in Romania
+- Grades 5-8 (ages ~10-14)
+- Middle school mathematics curriculum
+
+**Subject Coverage:**
+- **Full range** of middle school math topics:
+  - Arithmetic (basic operations, fractions, decimals)
+  - Algebra (equations, variables, expressions)
+  - Geometry (shapes, area, perimeter, angles, theorems)
+  - Word problems across all topics
+  - Mixed/combined topics
+
+**Test Format:**
+- A4 paper with **3-10 problems** per test
+- These are **problems, not simple questions** - multi-step work required
+- **NOT multiple choice** - open-ended responses requiring work
+
+**Answer Format (Mixed):**
+1. **Direct answers on test page**: When the answer fits in provided space
+2. **Additional scratch paper**: For problems requiring:
+   - Geometric drawings and diagrams
+   - Step-by-step calculations (showing work)
+   - Extended solutions
+
+**Grading Complexity:**
+- Teacher reviews **multiple pages per student**:
+  - Main test page (with questions)
+  - Additional work pages (calculations, drawings)
+- Must evaluate both final answer AND work process
+- Must review geometric drawings for accuracy
+
+**Key Implication for AI:**
+- Must handle diverse problem types (not specialized for one topic)
+- Must process multiple pages per student submission
+- Must evaluate both mathematical work AND visual elements (geometry drawings)
+- Must understand multi-step problem solving, not just final answers
 
 ---
 

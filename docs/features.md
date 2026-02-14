@@ -3,6 +3,28 @@
 ## Overview
 grAIde is an AI-powered grading assistant for teachers, with initial focus on mathematics education.
 
+## Target Use Case
+
+**Grade Level:** Grades 5-8 (middle school, ages 10-14)
+**Subject:** Full range of middle school mathematics
+  - Arithmetic (operations, fractions, decimals)
+  - Algebra (equations, variables, expressions)
+  - Geometry (shapes, area, perimeter, angles, theorems)
+  - Word problems across all topics
+
+**Test Characteristics:**
+- 3-10 open-ended problems per test (NOT multiple choice)
+- Multi-step problem solving required
+- **Multi-page submissions:**
+  - Main test page (A4) with questions
+  - Additional scratch paper for calculations and drawings
+- **Mixed answer formats:**
+  - Short answers written on test page
+  - Extended work requiring separate pages
+  - Geometric diagrams and visual elements
+
+**Key Challenge:** AI must handle diverse problem types and multi-page, multi-format student work
+
 ## Problem Context
 **Current Pain Points:**
 - 60-90 papers to grade per weekend
@@ -61,19 +83,38 @@ grAIde is an AI-powered grading assistant for teachers, with initial focus on ma
 ### 1. Paper Digitization & OCR (Critical for Speed)
 **Goal:** Eliminate physical paper burden and enable digital grading
 - [ ] Mobile/web photo upload of test papers
-- [ ] Batch upload (multiple papers at once)
-- [ ] OCR for handwritten math answers
+- [ ] **Multi-page handling per student**:
+  - [ ] Upload main test page + multiple scratch/work pages
+  - [ ] Associate all pages with correct student
+  - [ ] Navigate between pages during review
+- [ ] Batch upload (multiple students at once)
+- [ ] OCR for handwritten math:
+  - [ ] Numbers, equations, expressions
+  - [ ] Mathematical symbols (+, -, ×, ÷, =, etc.)
+  - [ ] Fractions, exponents, roots
+- [ ] **Visual element processing**:
+  - [ ] Geometric diagrams and drawings
+  - [ ] Graphs and charts
+  - [ ] Image-to-understanding for visual answers
 - [ ] Student name recognition on papers
 - [ ] Paper organization by test/class
 
-**Impact:** Reduces time carrying papers, enables grading anywhere
+**Impact:** Reduces time carrying papers, enables grading anywhere, handles real-world test complexity
 
 ### 2. AI-Powered Grading (Critical for Speed)
 **Goal:** Cut grading time from 3-5 min to under 1 min per paper
-- [ ] Define answer key with expected answers
-- [ ] AI evaluates student answers against key
+- [ ] Define answer key with expected answers per question
+- [ ] **AI evaluates diverse problem types**:
+  - [ ] Arithmetic calculations
+  - [ ] Algebraic solutions
+  - [ ] Geometric problems (including visual verification)
+  - [ ] Word problems
+- [ ] **Evaluate work process, not just final answer**:
+  - [ ] Review step-by-step calculations
+  - [ ] Identify where in the process errors occurred
+  - [ ] Verify correct formulas were used
 - [ ] Automatic point assignment
-- [ ] Suggest partial credit decisions
+- [ ] Suggest partial credit decisions (correct method, calculation error)
 - [ ] Handle multiple valid solution approaches
 
 **Impact:** Saves 2-4 minutes per paper = 3-4 hours per weekend
