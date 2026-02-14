@@ -4,8 +4,8 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 4
-- **Remaining**: 2
+- **Answered**: 5
+- **Remaining**: 1
 
 ---
 
@@ -189,8 +189,43 @@ The goal isn't just recording grades - it's retaining knowledge of each student'
 
 ### Q5: Should students see their grades/feedback through the app?
 **Category**: Users & Access
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Progressive Student Access Strategy:**
+
+**MVP (v0.1) - Teacher Only:**
+- ❌ NO student access to the app
+- ✅ Teacher-only interface
+- Teacher tells students their grades verbally (current workflow)
+- Focus on making grading faster for teacher first
+
+**V1 (Future - When Hosted) - Shareable Test Links:**
+When the app is deployed to web hosting, teachers can generate shareable links for individual tests:
+- ✅ **Share link per test** (no login required)
+- Students click link and see:
+  - 📸 Photos of their test pages
+  - 🔴 Mistakes circled in red by AI
+  - 💡 Suggestions for what to learn/review again
+  - 📊 Final grade/score
+- ✅ Simple, focused view (just that one test)
+- ✅ No authentication needed (link-based access)
+- ❌ No access to other tests or full history
+
+**V2+ (Future-Future) - Full Student Portal:**
+Eventually could build full student login system:
+- Student accounts with authentication
+- View all their tests over time
+- Track progress across multiple tests
+- See mistake patterns
+- **NOT in scope for MVP or V1**
+
+**Implication for MVP Development:**
+- Build teacher-only UI first
+- No student authentication system needed
+- No student-facing pages in MVP
+- Simpler, faster development
+- Can add student features later when app is hosted
 
 ---
 
