@@ -4,8 +4,10 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 3
-- **Remaining**: 3
+- **Answered**: 6 ✅
+- **Remaining**: 0
+
+**🎉 Specification Complete!** All foundational questions answered.
 
 ---
 
@@ -120,22 +122,162 @@ The goal isn't just recording grades - it's retaining knowledge of each student'
 
 ### Q4: What platform would work best?
 **Category**: Platform
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Platform Decision: Web App (Local Hosting)**
+
+**Primary Choice:**
+- **Web application** running locally on teacher's laptop
+- Access via `localhost:3000` (no internet deployment needed)
+- Built with React/Vue + Vite for fast development
+
+**Data Storage Architecture:**
+1. **Google Sheets as Database**
+   - Teacher can view/edit all data directly in familiar spreadsheet interface
+   - No separate database server needed
+   - Built-in backup and version history
+   - Easy data export to Excel
+
+   **Sheets Structure:**
+   - Sheet 1: Teachers
+   - Sheet 2: Classes
+   - Sheet 3: Students
+   - Sheet 4: Tests
+   - Sheet 5: Grades & Mistakes
+
+2. **Google Drive for Photos**
+   - Teacher uploads test photos to her own Google Drive
+   - App references photos via Drive API
+   - No separate photo storage needed
+   - She owns all her data
+
+**Multi-Teacher Support:**
+- Shared Google Drive approach (one Drive for the whole school)
+- Folder structure separates each teacher's data
+- Teachers access only their classes through the app
+- School admin can access full Drive if needed
+
+**Setup Process:**
+1. Clone repository
+2. Add Google API keys to `.env` file
+3. Run `npm install && npm run dev`
+4. Open browser to `localhost:3000`
+5. Grant Google permissions (Sheets + Drive access)
+6. Start using
+
+**Key Benefits:**
+- ✅ Zero hosting costs
+- ✅ Zero deployment complexity
+- ✅ Teacher controls all data
+- ✅ Familiar data editing (Google Sheets = Excel)
+- ✅ Works offline (after initial data load)
+- ✅ No vendor lock-in
+- ✅ Easy backup (copy the Sheet)
+
+**Technical Stack:**
+- Frontend: React + Vite
+- Database: Google Sheets API
+- Storage: Google Drive API
+- Auth: Google OAuth 2.0
+- No backend server required
+
+**Scalability:**
+- MVP: Single teacher, runs locally
+- Future: Could deploy to web hosting if needed
+- Current approach supports multiple teachers sharing one Drive
 
 ---
 
 ### Q5: Should students see their grades/feedback through the app?
 **Category**: Users & Access
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Progressive Student Access Strategy:**
+
+**MVP (v0.1) - Teacher Only:**
+- ❌ NO student access to the app
+- ✅ Teacher-only interface
+- Teacher tells students their grades verbally (current workflow)
+- Focus on making grading faster for teacher first
+
+**V1 (Future - When Hosted) - Shareable Test Links:**
+When the app is deployed to web hosting, teachers can generate shareable links for individual tests:
+- ✅ **Share link per test** (no login required)
+- Students click link and see:
+  - 📸 Photos of their test pages
+  - 🔴 Mistakes circled in red by AI
+  - 💡 Suggestions for what to learn/review again
+  - 📊 Final grade/score
+- ✅ Simple, focused view (just that one test)
+- ✅ No authentication needed (link-based access)
+- ❌ No access to other tests or full history
+
+**V2+ (Future-Future) - Full Student Portal:**
+Eventually could build full student login system:
+- Student accounts with authentication
+- View all their tests over time
+- Track progress across multiple tests
+- See mistake patterns
+- **NOT in scope for MVP or V1**
+
+**Implication for MVP Development:**
+- Build teacher-only UI first
+- No student authentication system needed
+- No student-facing pages in MVP
+- Simpler, faster development
+- Can add student features later when app is hosted
 
 ---
 
 ### Q6: What AI capabilities are most valuable?
 **Category**: AI Functionality
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**All capabilities are valuable, but prioritized in phases:**
+
+**Phase 1 (MVP) - Core Grading:**
+The fundamental AI workflow must be:
+1. **Look at photo(s)** of student's test (one or multiple pages)
+2. **Analyze calculations** - determine which work is right or wrong
+3. **Assign points** for each exercise/question
+4. **Calculate final grade**
+
+This is the baseline - without this, the app doesn't save time.
+
+**Phase 2 - Pattern Analysis & Recommendations:**
+Once basic grading works, add intelligence:
+- **Identify trends in mistakes**
+  - Find common errors across multiple students
+  - Detect class-wide misconceptions
+- **Suggest chapters to revisit**
+  - Recommend what each student should review
+  - Personalized learning guidance based on their specific mistakes
+
+**Phase 3+ - Advanced Capabilities:**
+
+1. **Specialized OCR per student**
+   - Each student has vastly different handwriting
+   - Train/tune OCR to recognize individual student's writing style
+   - Improves accuracy over time for each student
+
+2. **Subject-specific AI correctors**
+   - **Math** (MVP focus): Calculations, formulas, geometry
+   - **Language/Grammar** (future): Essay grading, grammar checking
+   - **History** (future): Fact checking, timeline understanding
+   - **Geography** (future): Map reading, location identification
+   - **Other subjects** (future): Expand as needed
+
+**Key Insight:**
+The AI must handle the complete grading workflow from photo → grade, not just assist with parts of it. The goal is to reduce 4-6 hours of grading to minutes while maintaining accuracy.
+
+**Technical Implication:**
+- Use Vision AI (GPT-4 Vision, Claude Vision, or similar) for photo analysis
+- Start with multi-step problem evaluation (not just answer checking)
+- Build pattern detection into data model from day one
+- Design for multi-subject expansion (even though MVP is math-only)
 
 ---
 
