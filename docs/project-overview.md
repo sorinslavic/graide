@@ -35,8 +35,12 @@ grAIde transforms grading from a 4-6 hour weekend burden into a streamlined proc
 **The Promise**: Cut grading time by 60-80% while gaining insights that make teaching more effective
 
 ## Target Users
-- **Primary**: Math teachers (K-12)
-- **Future**: Teachers across all subjects
+- **Primary**: Math teachers teaching grades 5-8 (Romanian middle school, ages 10-14)
+- **Initial Subjects**: Full range of middle school mathematics (arithmetic, algebra, geometry, word problems)
+- **Future Expansion**:
+  - Other grade levels (K-4, 9-12)
+  - Other subjects (language, history, geography, science)
+  - International markets beyond Romania
 
 ## Initial Use Case
 Built with input from a real math teacher to solve real classroom challenges.
@@ -64,12 +68,26 @@ Built with input from a real math teacher to solve real classroom challenges.
 - Time reallocated to lesson planning or student interaction
 
 ## Project Status
-**Phase**: Planning & Design
+**Phase**: Specification Complete, Ready for Development
+
+**Completed:**
+- ✅ Problem definition and user research
+- ✅ Feature requirements gathered
+- ✅ Technology stack decided (React + Vite + Google Sheets/Drive + OpenAI)
+- ✅ Architecture designed (local-first, zero-cost approach)
+- ✅ Complete specification (6/6 questions answered)
+- ✅ Data model defined (Google Sheets schema)
+
+**Next Steps:**
+- [ ] Create UI wireframes/mockups
+- [ ] Setup React + Vite project structure
+- [ ] Begin MVP development
 
 ## Documentation
-- [Specification Q&A](./spec-qa.md) - Questions and answers defining the product
+- [Specification Q&A](./spec-qa.md) - Questions and answers defining the product (6/6 complete)
+- [Data Model](./data-model.md) - Database schema and architecture diagrams
 - [Features](./features.md) - Feature roadmap and requirements
-- [Architecture](./architecture.md) - Technical architecture decisions
+- [Architecture](./architecture.md) - Technical architecture and tech stack
 - [Development](./development.md) - Development setup and guidelines
 
 ## Team

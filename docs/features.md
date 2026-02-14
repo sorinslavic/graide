@@ -78,6 +78,45 @@ grAIde is an AI-powered grading assistant for teachers, with initial focus on ma
 
 ---
 
+## AI Capabilities (Phased Approach)
+
+### Phase 1: Core AI Grading (MVP)
+The fundamental AI workflow that makes grading faster:
+1. **Analyze photo(s)** of student's test (handles multiple pages)
+2. **Evaluate calculations** - determine which work is right or wrong
+3. **Assign points** for each exercise/question
+4. **Calculate final grade**
+
+**Goal**: Reduce grading time from 3-5 minutes to under 1 minute per paper
+
+### Phase 2: Pattern Analysis & Intelligence (V1)
+Once basic grading works, add analytical capabilities:
+- **Identify mistake trends**
+  - Find common errors across multiple students
+  - Detect class-wide misconceptions
+- **Generate recommendations**
+  - Suggest chapters each student should review
+  - Personalized learning guidance based on specific mistakes
+
+**Goal**: Transform grading from task completion to actionable teaching insights
+
+### Phase 3: Advanced AI (V2+)
+Long-term enhancements:
+- **Specialized OCR per student**
+  - Each student has different handwriting
+  - Train/tune OCR to recognize individual writing styles
+  - Improve accuracy over time
+- **Subject-specific AI correctors**
+  - Math (MVP)
+  - Language/Grammar
+  - History
+  - Geography
+  - Other subjects
+
+**Goal**: Expand beyond math to support all subjects with specialized evaluation
+
+---
+
 ## MVP Features (Priority Order)
 
 ### 1. Paper Digitization & OCR (Critical for Speed)
@@ -163,11 +202,57 @@ grAIde is an AI-powered grading assistant for teachers, with initial focus on ma
 
 **Impact:** Enables all other features
 
-## Future Features
+## Future Features (Post-MVP)
+
+### V1 Features (After MVP)
+**Student Access via Share Links:**
+- [ ] Generate shareable links for individual tests
+- [ ] Student view (no login required):
+  - [ ] Photos of their test pages
+  - [ ] Mistakes circled in red by AI
+  - [ ] Suggestions for what to review/relearn
+  - [ ] Final grade/score
+- [ ] Link expiration and access control
+- [ ] Privacy: Students only see their own test
+
+**Enhanced AI Capabilities:**
+- [ ] Pattern detection across students
+  - [ ] Identify class-wide mistake trends
+  - [ ] Surface most commonly missed questions
+- [ ] Personalized recommendations
+  - [ ] Suggest chapters/topics to revisit per student
+  - [ ] Track improvement over time
+- [ ] Per-student OCR tuning
+  - [ ] Learn each student's handwriting style
+  - [ ] Improve accuracy for individual students over time
+
+**Multi-Teacher Support:**
+- [ ] Shared Drive folder structure
+- [ ] Teacher-specific data isolation
+- [ ] School admin view (optional)
+
+### V2+ Features (Long-term)
+**Full Student Portal:**
+- [ ] Student login/authentication
+- [ ] View all tests over time
+- [ ] Track progress across multiple tests
+- [ ] See personal mistake patterns
+- [ ] Performance analytics
+
+**Subject Expansion:**
+- [ ] Language/Grammar grading
+- [ ] History fact checking
+- [ ] Geography assessments
+- [ ] Science problem evaluation
+
+**Advanced Features:**
 - [ ] Test generation with AI
-- [ ] Multi-subject support
-- [ ] Parent/student portal
-- [ ] Integration with LMS platforms
+- [ ] Integration with LMS platforms (Google Classroom, Moodle)
+- [ ] Parent portal (view student progress)
+- [ ] Batch grading automation
+- [ ] Custom rubric creation
+- [ ] Plagiarism detection
+- [ ] Cloud deployment option (for schools)
 
 ## Notes
 This document will be updated as we define the specific features and priorities.
