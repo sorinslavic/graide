@@ -4,8 +4,8 @@ This document tracks the questions and answers that define the grAIde product sp
 
 ## Status
 - **Total Questions**: 6
-- **Answered**: 1
-- **Remaining**: 5
+- **Answered**: 2
+- **Remaining**: 4
 
 ---
 
@@ -39,8 +39,37 @@ The solution must prioritize reducing grading time while automatically tracking 
 
 ### Q2: How does your wife currently grade tests?
 **Category**: Current Workflow
-**Status**: ⏸️ Not asked yet
+**Status**: ✅ Answered
 **Answer**:
+
+**Current Manual Process:**
+
+**Test Format:**
+- Physical A4 papers (stack of 60-90)
+- Two question types:
+  1. Simple answer entry directly on test page
+  2. Multi-step problems requiring additional pages showing computation/work
+
+**Step-by-Step Grading Workflow:**
+1. Pick up each paper from stack
+2. Identify student name on paper
+3. Review each problem and student's answer
+4. Circle answers in red (incorrect) or green (correct)
+5. Assign points for each question
+6. Manually add up all points to calculate total score
+7. While grading, identify and mark specific mistakes:
+   - Incorrect formulas
+   - Basic math operation errors (addition, subtraction, etc.)
+   - Typos that led to wrong results
+   - Circle and annotate the error
+
+**Grade Recording:**
+- Online gradebook exists but is **optional/not always used**
+- **Primary requirement**: Must be able to verbally tell each student their grade
+- **Critical requirement**: Must remember what mistakes each student made to guide them toward understanding
+
+**Key Insight:**
+The goal isn't just recording grades - it's retaining knowledge of each student's specific errors to provide individualized guidance and reteaching. This mental load is significant across 60-90 students per test.
 
 ---
 
