@@ -73,7 +73,7 @@ Built with input from a real math teacher to solve real classroom challenges.
 **Completed:**
 - ✅ Problem definition and user research
 - ✅ Feature requirements gathered
-- ✅ Technology stack decided (React + Vite + Google Sheets/Drive + OpenAI)
+- ✅ Technology stack decided (React + Vite + Google Sheets/Drive + Gemini)
 - ✅ Architecture designed (local-first, zero-cost approach)
 - ✅ Complete specification (6/6 questions answered)
 - ✅ Data model defined (Google Sheets schema)

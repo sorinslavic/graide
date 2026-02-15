@@ -160,7 +160,7 @@ The goal isn't just recording grades - it's retaining knowledge of each student'
 
 **Setup Process:**
 1. Clone repository
-2. Add Google API keys to `.env` file
+2. Add Google API keys + Gemini API key to `.env` file
 3. Run `npm install && npm run dev`
 4. Open browser to `localhost:3000`
 5. Grant Google permissions (Sheets + Drive access)
@@ -274,7 +274,7 @@ Once basic grading works, add intelligence:
 The AI must handle the complete grading workflow from photo → grade, not just assist with parts of it. The goal is to reduce 4-6 hours of grading to minutes while maintaining accuracy.
 
 **Technical Implication:**
-- Use Vision AI (GPT-4 Vision, Claude Vision, or similar) for photo analysis
+- Use Google Gemini Vision (2.5 Flash) for photo analysis — free tier, no credit card required
 - Start with multi-step problem evaluation (not just answer checking)
 - Build pattern detection into data model from day one
 - Design for multi-subject expansion (even though MVP is math-only)
