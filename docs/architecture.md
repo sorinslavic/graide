@@ -15,11 +15,43 @@ grAIde is a locally-hosted web application that uses Google Sheets as a database
 **Rationale**: React + Vite provides fast development experience and runs efficiently on localhost.
 
 ### Backend
-- **Runtime**: **None required** ✅
-- **Architecture**: Frontend-only application
-- **APIs**: Direct integration with Google APIs from browser
+- **Runtime**: **None required for MVP** ✅
+- **Architecture**: Frontend-only application with **service layer abstraction**
+- **APIs**: Direct integration with Google APIs and OpenAI from browser (MVP)
+- **Future**: Service implementations can be swapped to call a backend server without changing UI code
 
-**Rationale**: By using Google Sheets API and Drive API directly from the frontend, we eliminate the need for a backend server, reducing complexity and cost to zero.
+**Rationale**: By using Google Sheets API, Drive API, and OpenAI API directly from the frontend, we eliminate the need for a backend server for MVP. Since the app runs on localhost (teacher's laptop), API keys in `.env` are safe. A clean service layer with TypeScript interfaces ensures we can extract a backend later by swapping implementations — zero UI changes required.
+
+### Service Layer Pattern
+The app uses **TypeScript interfaces** to separate UI from business logic, similar to Java's interface/implementation pattern:
+
+```typescript
+// Interface (contract)
+export interface AIGradingService {
+  gradeSubmission(photos: string[], answerKey: AnswerKey): Promise<GradingResult>;
+}
+
+// MVP Implementation (direct browser call)
+export class LocalAIGradingService implements AIGradingService {
+  async gradeSubmission(photos, answerKey) {
+    // calls OpenAI directly from browser
+  }
+}
+
+// Future Implementation (calls backend proxy)
+export class RemoteAIGradingService implements AIGradingService {
+  async gradeSubmission(photos, answerKey) {
+    // calls Express server which holds the API key
+  }
+}
+```
+
+**This pattern applies to all services** (AI, Google Sheets, Google Drive). Swapping from local to remote = changing one line of configuration.
+
+**When to extract a backend:**
+- When the app moves from localhost to cloud hosting (API keys can't be in frontend)
+- When multiple teachers need a shared server
+- Implementation: Add a lightweight Node.js + Express server that proxies API calls
 
 ### Database
 - **Primary Database**: **Google Sheets API**
@@ -78,6 +110,11 @@ grAIde is a locally-hosted web application that uses Google Sheets as a database
 - **Distribution**: Git repository clone
 - **Updates**: `git pull` + `npm install`
 - **CI/CD**: Not needed for local deployment
+- **Custom URL**: Teacher can map `graide.ai` to localhost via `/etc/hosts`:
+  ```
+  127.0.0.1   graide.ai
+  ```
+  Then access the app at `http://graide.ai:3000` for a polished experience.
 
 **Future**: Could deploy to Vercel/Netlify if teachers want cloud access
 
@@ -152,14 +189,19 @@ Analytics View:
 
 ## System Components
 
-### Core Modules
-1. **Auth Module**: Google OAuth, token management
-2. **Sheets Service**: CRUD operations on Google Sheets
-3. **Drive Service**: Upload/download/list files from Drive
-4. **AI Service**: Send photos to GPT-4 Vision, parse responses
-5. **Grading Engine**: Orchestrate photo → AI → grade workflow
-6. **Analytics Engine**: Query Sheets for patterns and trends
-7. **UI Components**: React components for grading, management, analytics
+### Core Modules (Service Layer Architecture)
+
+Each service is defined as a **TypeScript interface** with a concrete implementation. This keeps UI and business logic fully decoupled.
+
+1. **Auth Service** (`services/auth/`): Google OAuth, token management
+2. **Sheets Service** (`services/google/sheets`): CRUD operations on Google Sheets
+3. **Drive Service** (`services/google/drive`): Upload/download/list files from Drive
+4. **AI Grading Service** (`services/ai/`): Send photos to GPT-4 Vision, parse responses
+5. **Grading Engine** (`services/grading/`): Orchestrate photo → AI → grade workflow
+6. **Analytics Engine** (`services/analytics/`): Query Sheets for patterns and trends
+7. **UI Components** (`components/`): React components for grading, management, analytics
+
+**Key principle:** Components never call external APIs directly — they always go through service interfaces via React hooks.
 
 ### External Dependencies
 - `@react-oauth/google` - Google OAuth

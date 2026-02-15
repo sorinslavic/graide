@@ -119,31 +119,47 @@ git commit -m "docs: update README with setup instructions"
 ```
 graide/
 ├── src/
-│   ├── components/      # React components
-│   │   ├── grading/     # Grading interface
-│   │   ├── classes/     # Class management
-│   │   ├── students/    # Student management
-│   │   ├── analytics/   # Analytics dashboard
-│   │   └── common/      # Shared components
-│   ├── services/        # API integrations
-│   │   ├── google/      # Google Sheets & Drive
-│   │   │   ├── auth.js
-│   │   │   ├── sheets.js
-│   │   │   └── drive.js
-│   │   └── ai/          # OpenAI integration
-│   │       └── grading.js
-│   ├── hooks/           # Custom React hooks
-│   ├── utils/           # Helper functions
-│   ├── types/           # TypeScript types (if using TS)
-│   ├── App.jsx          # Main app component
-│   └── main.jsx         # Entry point
-├── public/              # Static assets
-├── docs/                # Documentation
-├── .env.example         # Example environment variables
+│   ├── components/          # UI layer (React - what the user sees)
+│   │   ├── grading/         #   Grading & review interface
+│   │   ├── classes/         #   Class management
+│   │   ├── students/        #   Student management
+│   │   ├── tests/           #   Test setup & photo upload
+│   │   ├── analytics/       #   Analytics dashboard
+│   │   └── common/          #   Shared UI components
+│   ├── services/            # Business logic layer (interfaces + implementations)
+│   │   ├── auth/            #   Google OAuth service
+│   │   │   ├── auth-service.ts          # Interface
+│   │   │   └── google-auth-service.ts   # Implementation
+│   │   ├── google/          #   Google Sheets & Drive services
+│   │   │   ├── sheets-service.ts        # Interface
+│   │   │   ├── local-sheets-service.ts  # Implementation (direct API)
+│   │   │   ├── drive-service.ts         # Interface
+│   │   │   └── local-drive-service.ts   # Implementation (direct API)
+│   │   ├── ai/              #   AI grading service
+│   │   │   ├── ai-service.ts            # Interface
+│   │   │   └── local-ai-service.ts      # Implementation (direct OpenAI)
+│   │   └── grading/         #   Grading orchestration
+│   │       └── grading-engine.ts        # Photo → AI → grade workflow
+│   ├── hooks/               # React hooks (connects services to components)
+│   ├── utils/               # Helper functions
+│   ├── types/               # TypeScript types & shared models
+│   ├── App.tsx              # Main app component
+│   └── main.tsx             # Entry point
+├── public/                  # Static assets
+├── docs/                    # Documentation
+├── .env.example             # Example environment variables
 ├── .gitignore
 ├── package.json
-├── vite.config.js       # Vite configuration
+├── vite.config.ts           # Vite configuration
+├── tsconfig.json            # TypeScript configuration
 └── README.md
+
+### Architecture Note
+The `services/` layer uses TypeScript interfaces so implementations can be
+swapped without changing UI code. For MVP, all services call APIs directly
+from the browser (safe on localhost). To extract a backend later, add new
+implementation files (e.g., `remote-ai-service.ts`) that call a server
+instead — no component changes needed.
 ```
 
 ---
@@ -200,16 +216,48 @@ When ready to deploy to cloud:
 - [ ] Create wireframes/mockups
 
 ### Phase 2: MVP Development (Current)
-- [ ] Setup project structure (React + Vite)
-- [ ] Implement Google OAuth login
-- [ ] Implement Google Sheets integration
-- [ ] Implement Google Drive integration
-- [ ] Build class/student management UI
-- [ ] Build test upload interface
-- [ ] Implement AI grading (OpenAI Vision API)
-- [ ] Build grading review interface
-- [ ] Implement analytics dashboard
-- [ ] Testing with real use cases
+
+**Milestone 0: Project Scaffold**
+- [ ] Initialize React + Vite + TypeScript project
+- [ ] Set up folder structure (components/, services/, hooks/, types/)
+- [ ] Configure ESLint, Prettier, Tailwind CSS
+- [ ] Create `.env.example` with required variables
+
+**Milestone 1: Auth + Google APIs (Sheets/Drive)**
+- [ ] Implement Google OAuth login service (interface + implementation)
+- [ ] Implement Google Sheets service (CRUD operations)
+- [ ] Implement Google Drive service (upload/download/list)
+- [ ] Auto-create "graide-data" spreadsheet with 6 sheets on first login
+
+**Milestone 2: Class & Student Management**
+- [ ] Build class management UI (create/edit/delete classes)
+- [ ] Build student management UI (create/edit/delete students)
+- [ ] Wire UI to Sheets service for persistence
+
+**Milestone 3: Test Setup & Photo Upload**
+- [ ] Build test creation UI (name, date, questions, points per question)
+- [ ] Build photo upload interface (single + batch)
+- [ ] Implement Drive folder organization (year/class/test/)
+- [ ] Associate uploaded photos with students
+
+**Milestone 4: AI Grading Engine**
+- [ ] Define AI grading service interface
+- [ ] Implement local AI service (direct OpenAI Vision calls)
+- [ ] Build prompt engineering for math grading (answer key + photo → evaluation)
+- [ ] Parse AI responses into structured grade + mistake data
+- [ ] Store results in Grades + Mistakes sheets
+
+**Milestone 5: Teacher Review & Adjustment Interface**
+- [ ] Build side-by-side view (original photo vs AI evaluation)
+- [ ] Implement grade override and partial credit adjustments
+- [ ] Add approve/reject per question
+- [ ] Add teacher comments per question or paper
+
+**Milestone 6: Analytics Dashboard**
+- [ ] Build class-wide mistake pattern view
+- [ ] Build per-student error history
+- [ ] Build score distribution charts
+- [ ] Implement quick lookup ("What did Student X get wrong on Test Y?")
 
 ### Phase 3: Refinement
 - [ ] User feedback integration (teacher testing)
