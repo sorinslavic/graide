@@ -8,9 +8,9 @@ grAIde is a locally-hosted web application that uses Google Sheets as a database
 ### Frontend
 - **Framework**: React 18+
 - **Build Tool**: Vite (fast dev server, optimized builds)
-- **UI Library**: TBD (shadcn/ui, MUI, or custom)
-- **State Management**: React Context / Zustand (TBD)
-- **Styling**: Tailwind CSS (likely)
+- **UI Library**: shadcn/ui (copy-paste components on Radix, fully customizable)
+- **State Management**: React Context (built-in, sufficient for app needs)
+- **Styling**: Tailwind CSS
 
 **Rationale**: React + Vite provides fast development experience and runs efficiently on localhost.
 
