@@ -205,13 +205,14 @@ Instead of the app magically creating files in Drive, the **teacher controls the
    │   Google    │     │   Google     │    │  Gemini    │
    │   Sheets    │     │    Drive     │    │  2.5 Flash │
    │             │     │              │    │            │
-   │ • Teachers  │     │ • Test       │    │            │
-   │ • Classes   │     │   Photos     │    │ • Grade    │
-   │ • Students  │     │ • Organized  │    │   Tests    │
-   │ • Tests     │     │   by Folders │    │ • Find     │
-   │ • Grades    │     │              │    │   Mistakes │
-   │ • Mistakes  │     │              │    │ • Suggest  │
-   └─────────────┘     └──────────────┘    │   Feedback │
+   │ • Classes   │     │ • Test       │    │            │
+   │ • Students  │     │   Photos     │    │ • Grade    │
+   │ • Tests     │     │ • Organized  │    │   Tests    │
+   │ • Results   │     │   by Folders │    │ • Find     │
+   │ • Mistakes  │     │              │    │   Mistakes │
+   │ • Rubrics   │     │              │    │ • Suggest  │
+   │ • Config    │     │              │    │   Feedback │
+   └─────────────┘     └──────────────┘    │            │
                                             └────────────┘
    Teacher can edit         Teacher owns
    directly in Sheets       all photos
@@ -407,7 +408,7 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 - `@google/generative-ai` - Google Gemini API client
 - `react`, `react-dom` - UI framework
 - `vite` - Build tool
-- Chart library (TBD) - For analytics visualizations
+- `recharts` - Chart library for analytics visualizations (React-native, composable, lightweight)
 
 ## Key Design Decisions
 
