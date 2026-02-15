@@ -74,18 +74,21 @@ export class RemoteAIGradingService implements AIGradingService {
 - ⚠️ Limited to ~10M cells per spreadsheet (sufficient for MVP)
 
 ### File Storage
-- **Storage**: **Google Drive API** — `test-scans/` subfolder inside the teacher's shared folder
-- **Organization**: Folder-based structure managed by the app
-  - `test-scans/[ClassName]-[TestName]-[Date]/student_name.jpg`
-- **Upload**: Teacher uploads photos directly from phone via Google Drive's native "Send to Drive" feature
-- **Access**: Drive API for reading/listing photos; app reads from known folder structure
+- **Storage**: **Google Drive API** — teacher's shared folder
+- **Organization**: Two-zone folder structure managed by the app:
+  - **Inbox zone** (folder root): loose photos dumped from phone — unsorted
+  - **Organized zone** (`organized/`): `[SchoolYear]/[ClassName]/[TestName]/student.jpg` — sorted by app
+- **Upload**: Teacher dumps all photos into the shared folder root from phone (zero friction)
+- **Sorting**: App's **Photo Inbox** UI lets teacher assign photos → app moves them into `organized/` subfolders
+- **Access**: Drive API for reading/listing/moving photos
 
 **Rationale**:
 - ✅ Zero storage costs
 - ✅ Teacher owns all their data
-- ✅ Built-in backup and sharing
-- ✅ Familiar interface — teacher uploads from phone, no custom upload UI needed for MVP
-- ✅ Teacher can browse photos in Drive anytime
+- ✅ Upload is dead simple — just dump into one folder from phone
+- ✅ No manual folder creation or file-by-file organizing
+- ✅ Drive stays clean — organized folder is browsable and logical
+- ✅ Teacher can browse organized photos in Drive anytime
 
 ### AI/ML
 - **Primary AI**: **OpenAI GPT-4 Vision API** (or Claude Vision)
@@ -122,14 +125,17 @@ Instead of the app magically creating files in Drive, the **teacher controls the
 ```
 📁 [Teacher's Folder Name]
 ├── 📊 graide-data            (spreadsheet: classes, students, tests, results, rubrics, config)
-└── 📁 test-scans/
-    └── 📁 [ClassName]-[TestName]-[Date]/
-        ├── 📷 student1.jpg
-        ├── 📷 student2.jpg
-        └── ...
+├── 📷 (loose photos land here — the "inbox")
+└── 📁 organized/
+    └── 📁 [SchoolYear]/
+        └── 📁 [ClassName]/
+            └── 📁 [TestName]/
+                ├── 📷 student1.jpg
+                ├── 📷 student2.jpg
+                └── ...
 ```
 
-**Photo upload workflow**: Teacher takes a photo with their phone → "Send to Drive" → selects the appropriate test-scans subfolder. No upload UI needed in the app for MVP.
+**Photo upload workflow**: Teacher takes photos with phone → "Send to Drive" → dumps all into the shared folder root. No subfolder picking needed. The app handles the rest (see Photo Inbox below).
 
 **Why this approach:**
 - ✅ Teacher controls the folder — they pick name, location, sharing
@@ -162,10 +168,10 @@ Instead of the app magically creating files in Drive, the **teacher controls the
 │  ┌────────────────────────────────────────────────┐    │
 │  │         grAIde React App (Frontend)            │    │
 │  │                                                │    │
+│  │  • Photo Inbox (sort & assign)               │    │
 │  │  • Grading Interface                          │    │
 │  │  • Class/Student Management                   │    │
 │  │  • Analytics Dashboard                        │    │
-│  │  • Test Upload                                │    │
 │  └───┬────────────────────┬───────────────────┬──┘    │
 │      │                    │                   │        │
 └──────┼────────────────────┼───────────────────┼────────┘
@@ -193,13 +199,14 @@ Instead of the app magically creating files in Drive, the **teacher controls the
 
 ### Grading Workflow
 ```
-1. Teacher takes photo of test → uploads to Drive from phone ("Send to Drive")
-2. App lists photos in test-scans subfolder → Google Drive API
-3. App sends photo to GPT-4 Vision → OpenAI API
-4. AI returns grades/mistakes → App processes
-5. App writes results → Google Sheets
-6. Teacher reviews in app → Can override/adjust
-7. Final grades stored → Google Sheets
+1. Teacher takes 50 photos of tests on phone
+2. Teacher dumps all 50 into shared Drive folder ("Send to Drive" — one action)
+3. Teacher opens grAIde → Photo Inbox shows 50 new photos
+4. Teacher assigns photos: pick class + test, then tag each photo with student name
+5. App moves assigned photos → organized/[Year]/[Class]/[Test]/[Student].jpg
+6. Teacher clicks "Grade" on a test → app sends photos to AI
+7. AI returns grades/mistakes → app writes to Sheets
+8. Teacher reviews, overrides if needed → final grades saved
 ```
 
 ### Data Access Pattern
@@ -230,6 +237,131 @@ Analytics View:
 └─ Display charts → React UI
 ```
 
+## Photo Inbox — Bulk Photo Management
+
+### The Problem
+A teacher photographs 50 tests. Without this feature, she'd have to:
+- Create folders manually in Drive (per class, per test)
+- Move each photo one by one into the right folder
+- Name each file with the student's name
+- Remember which photos she already processed
+
+This takes longer than the grading itself.
+
+### The Solution: Photo Inbox
+The app provides a **Photo Inbox** — a dedicated UI screen where all new (unsorted) photos appear, and the teacher can quickly route them to the right class/test/student with minimal clicks.
+
+### How It Works
+
+#### Upload (phone side — zero friction)
+1. Teacher takes photos of all tests (50 photos)
+2. Opens Google Drive app on phone → navigates to shared grAIde folder
+3. Taps "Upload" → selects all 50 photos → done
+4. All 50 photos land in the **root of the shared folder** (no subfolder picking needed)
+
+#### Sort (app side — Photo Inbox UI)
+1. Teacher opens grAIde → clicks **"Photo Inbox"** (badge shows "50 new")
+2. App queries Drive API: list all image files in folder root (not in `organized/` subfolder)
+3. Photos displayed as a **thumbnail grid**, sorted by upload time (newest first)
+4. Teacher workflow for assigning:
+
+**Step 1 — Select class + test** (top of screen)
+- Dropdown: pick class (e.g., "5A")
+- Dropdown: pick test (e.g., "Math Test 3") — or create new test inline
+- This sets the "target" for all assignments in this session
+
+**Step 2 — Assign students to photos**
+- Teacher clicks a photo thumbnail → a student picker appears (list of students in selected class)
+- Teacher picks the student → photo gets a green checkmark + student name overlay
+- **Keyboard shortcut flow**: photos can be assigned in sequence — click photo, type first few letters of student name, Enter, next photo auto-selects
+- **Multi-page tests**: if a student has multiple pages, teacher selects multiple photos then assigns them to one student (they become page 1, page 2, etc.)
+
+**Step 3 — Confirm & organize**
+- Teacher clicks **"Assign All"** (or presses Enter)
+- App moves each assigned photo via Drive API:
+  - From: `[shared folder root]/IMG_20250215_1234.jpg`
+  - To: `organized/2025-2026/5A/Math-Test-3/student_name.jpg` (or `student_name_p1.jpg`, `_p2.jpg` for multi-page)
+- App creates subfolders automatically if they don't exist
+- App records the mapping in the **Results sheet** (student_id, test_id, drive_file_id, file_path)
+- Assigned photos disappear from the inbox
+- Remaining unassigned photos stay in the inbox for later
+
+### UI Layout
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  📥 Photo Inbox                              50 new     │
+├─────────────────────────────────────────────────────────┤
+│  Class: [  5A  ▾]    Test: [ Math Test 3 ▾] [+ New]    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐    │
+│  │      │  │  ✅  │  │      │  │  ✅  │  │      │    │
+│  │ img1 │  │ img2 │  │ img3 │  │ img4 │  │ img5 │    │
+│  │      │  │Maria │  │      │  │Andrei│  │      │    │
+│  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘    │
+│                                                         │
+│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐    │
+│  │      │  │      │  │      │  │      │  │      │    │
+│  │ img6 │  │ img7 │  │ img8 │  │ img9 │  │img10 │    │
+│  │      │  │      │  │      │  │      │  │      │    │
+│  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘    │
+│                                                    ...  │
+├─────────────────────────────────────────────────────────┤
+│  2 assigned / 50 total          [ Assign & Organize ▶ ] │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Drive Folder Structure (after organizing)
+
+```
+📁 [Teacher's Shared Folder]
+├── 📊 graide-data                    (spreadsheet)
+├── 📷 IMG_20250215_9999.jpg          (unassigned — still in inbox)
+├── 📷 IMG_20250215_9998.jpg          (unassigned — still in inbox)
+└── 📁 organized/
+    └── 📁 2025-2026/
+        ├── 📁 5A/
+        │   ├── 📁 Math-Test-3/
+        │   │   ├── 📷 maria_popescu.jpg
+        │   │   ├── 📷 andrei_ionescu.jpg
+        │   │   └── 📷 elena_dumitrescu_p1.jpg
+        │   │   └── 📷 elena_dumitrescu_p2.jpg
+        │   └── 📁 Math-Test-2/
+        │       └── ...
+        └── 📁 6B/
+            └── ...
+```
+
+### Technical Details
+
+#### Drive API Operations
+- **List inbox**: `files.list` with `'<folder_id>' in parents AND mimeType contains 'image/'` (excludes `organized/` subfolder and spreadsheet)
+- **Move file**: `files.update` with `addParents=<target_folder_id>&removeParents=<root_folder_id>`
+- **Rename file**: `files.update` with `name=<student_name>.jpg`
+- **Create subfolder**: `files.create` with `mimeType='application/vnd.google-apps.folder'`
+
+#### Data Tracking (Results sheet)
+When a photo is assigned, the app writes a row to the Results sheet:
+| student_id | test_id | class_id | school_year | drive_file_id | file_path | status | assigned_at |
+|---|---|---|---|---|---|---|---|
+| s_001 | t_003 | c_5a | 2025-2026 | abc123 | organized/2025-2026/5A/Math-Test-3/maria_popescu.jpg | pending_grade | 2025-02-15T... |
+
+The `status` field tracks: `pending_grade` → `graded` → `reviewed`
+
+#### Edge Cases
+- **Duplicate assignment**: warn if a student already has a photo for that test (allow override)
+- **Non-image files**: ignore files that aren't images (filter by mimeType)
+- **Photos already in organized/**: don't show in inbox (only root-level images appear)
+- **Empty inbox**: show a friendly "No new photos — upload from your phone!" message with instructions
+- **Bulk operations**: "Select All" to assign all remaining photos at once (useful when photos are in student order and class roster is sorted)
+
+### Why This Matters
+- **50 photos sorted in ~2 minutes** instead of 20+ minutes of manual Drive folder management
+- Teacher's mental model: "dump photos, sort in app, grade" — three clear steps
+- Drive stays clean and browsable even outside the app
+- Photo-to-student mapping is stored in Sheets, so grading engine knows exactly which photos to grade
+
 ## System Components
 
 ### Core Modules (Service Layer Architecture)
@@ -238,11 +370,12 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 
 1. **Auth Service** (`services/auth/`): Google OAuth, token management
 2. **Sheets Service** (`services/google/sheets`): CRUD operations on Google Sheets
-3. **Drive Service** (`services/google/drive`): Upload/download/list files from Drive
-4. **AI Grading Service** (`services/ai/`): Send photos to GPT-4 Vision, parse responses
-5. **Grading Engine** (`services/grading/`): Orchestrate photo → AI → grade workflow
-6. **Analytics Engine** (`services/analytics/`): Query Sheets for patterns and trends
-7. **UI Components** (`components/`): React components for grading, management, analytics
+3. **Drive Service** (`services/google/drive`): List, move, rename, create folders in Drive
+4. **Photo Inbox Service** (`services/photos/`): List unassigned photos, assign to student/test, move to organized folder, track in Results sheet
+5. **AI Grading Service** (`services/ai/`): Send photos to GPT-4 Vision, parse responses
+6. **Grading Engine** (`services/grading/`): Orchestrate photo → AI → grade workflow
+7. **Analytics Engine** (`services/analytics/`): Query Sheets for patterns and trends
+8. **UI Components** (`components/`): React components for inbox, grading, management, analytics
 
 **Key principle:** Components never call external APIs directly — they always go through service interfaces via React hooks.
 
