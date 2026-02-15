@@ -54,14 +54,15 @@ export class RemoteAIGradingService implements AIGradingService {
 - Implementation: Add a lightweight Node.js + Express server that proxies API calls
 
 ### Database
-- **Primary Database**: **Google Sheets API**
-  - Teachers table
-  - Classes table
-  - Students table
-  - Tests table
-  - Grades table
-  - Mistakes table
+- **Primary Database**: **Google Sheets API** — single spreadsheet auto-created inside the teacher's shared folder
+  - Classes sheet
+  - Students sheet
+  - Tests sheet
+  - Results sheet
+  - Rubrics sheet
+  - Config sheet
 - **Query Method**: Google Sheets API v4
+- **Scope**: One spreadsheet with a `school_year` column (no need for separate files per year)
 
 **Rationale**:
 - ✅ Zero hosting costs
@@ -69,19 +70,22 @@ export class RemoteAIGradingService implements AIGradingService {
 - ✅ Built-in version history and backup
 - ✅ Easy data export
 - ✅ No database migrations needed
+- ✅ Auto-created on first login if folder is empty
 - ⚠️ Limited to ~10M cells per spreadsheet (sufficient for MVP)
 
 ### File Storage
-- **Storage**: **Google Drive API**
-- **Organization**: Folder-based structure
-  - `/graide/2024-2025/Class-5A/Test-1/student_name.jpg`
-- **Access**: Drive API for upload/download/display
+- **Storage**: **Google Drive API** — `test-scans/` subfolder inside the teacher's shared folder
+- **Organization**: Folder-based structure managed by the app
+  - `test-scans/[ClassName]-[TestName]-[Date]/student_name.jpg`
+- **Upload**: Teacher uploads photos directly from phone via Google Drive's native "Send to Drive" feature
+- **Access**: Drive API for reading/listing photos; app reads from known folder structure
 
 **Rationale**:
 - ✅ Zero storage costs
 - ✅ Teacher owns all their data
 - ✅ Built-in backup and sharing
-- ✅ Familiar interface for manual management
+- ✅ Familiar interface — teacher uploads from phone, no custom upload UI needed for MVP
+- ✅ Teacher can browse photos in Drive anytime
 
 ### AI/ML
 - **Primary AI**: **OpenAI GPT-4 Vision API** (or Claude Vision)
@@ -96,14 +100,45 @@ export class RemoteAIGradingService implements AIGradingService {
 
 **Rationale**: Vision models can analyze test photos directly without OCR step, handling both text and geometric drawings.
 
-### Authentication
+### Authentication & Data Access
 - **Auth Provider**: **Google OAuth 2.0**
 - **Scopes Needed**:
+  - `openid` + `profile` + `email` (identity)
   - `https://www.googleapis.com/auth/spreadsheets` (read/write Sheets)
-  - `https://www.googleapis.com/auth/drive.file` (access Drive files created by app)
+  - `https://www.googleapis.com/auth/drive` (read/write Drive — needed to access teacher-uploaded photos)
+- **All scopes requested at login** (Drive+Sheets access is core to the app, incremental auth adds no value)
 - **Session Management**: OAuth tokens stored in browser localStorage
 
-**Rationale**: Teacher logs in with Google account, grants permissions once, app can then access their Sheets and Drive.
+#### Shared Folder Model (MVP)
+Instead of the app magically creating files in Drive, the **teacher controls the folder**:
+
+1. Teacher creates a folder in Google Drive (any name they want)
+2. Teacher shares it with an edit link
+3. Teacher pastes the share link into grAIde at first login
+4. App extracts and stores the **folder ID** in `localStorage`
+5. If forgotten, app simply asks again
+
+**Inside the shared folder, the app creates:**
+```
+📁 [Teacher's Folder Name]
+├── 📊 graide-data            (spreadsheet: classes, students, tests, results, rubrics, config)
+└── 📁 test-scans/
+    └── 📁 [ClassName]-[TestName]-[Date]/
+        ├── 📷 student1.jpg
+        ├── 📷 student2.jpg
+        └── ...
+```
+
+**Photo upload workflow**: Teacher takes a photo with their phone → "Send to Drive" → selects the appropriate test-scans subfolder. No upload UI needed in the app for MVP.
+
+**Why this approach:**
+- ✅ Teacher controls the folder — they pick name, location, sharing
+- ✅ Teacher can open Drive and see exactly where everything lives
+- ✅ Phone upload is dead simple (native Google Drive sharing)
+- ✅ No magic — transparent data storage
+- ✅ Easy to refactor — folder ID is just a string in localStorage, trivial to move to a DB later
+
+**Rationale**: Teacher logs in with Google, grants permissions once, pastes their folder link. The app works within that folder. Teacher stays in control of their data.
 
 ### Deployment
 - **Hosting**: **Local (localhost:3000)**
@@ -158,8 +193,8 @@ export class RemoteAIGradingService implements AIGradingService {
 
 ### Grading Workflow
 ```
-1. Teacher uploads test photos → Google Drive (via Drive API)
-2. App stores Drive file IDs → Google Sheets
+1. Teacher takes photo of test → uploads to Drive from phone ("Send to Drive")
+2. App lists photos in test-scans subfolder → Google Drive API
 3. App sends photo to GPT-4 Vision → OpenAI API
 4. AI returns grades/mistakes → App processes
 5. App writes results → Google Sheets
@@ -169,20 +204,28 @@ export class RemoteAIGradingService implements AIGradingService {
 
 ### Data Access Pattern
 ```
-App Startup:
+First Login:
 ├─ OAuth login (Google)
+├─ Teacher pastes shared folder link → extract folder ID → store in localStorage
+├─ App checks folder for graide-data spreadsheet
+├─ If empty → create spreadsheet + test-scans subfolder
+└─ Ready to use
+
+App Startup (returning):
+├─ OAuth login (Google)
+├─ Read folder ID from localStorage (ask again if missing)
 ├─ Fetch classes → Read from Sheets
 ├─ Fetch students → Read from Sheets
 └─ Cache in React state
 
 Grading Session:
-├─ Load test photos → Read from Drive
+├─ List test photos → Read from Drive (test-scans subfolder)
 ├─ Send to AI → OpenAI API
 ├─ Display results → React UI
 └─ Save grades → Write to Sheets
 
 Analytics View:
-├─ Query Grades sheet → Aggregate data
+├─ Query Results sheet → Aggregate data
 ├─ Query Mistakes sheet → Pattern analysis
 └─ Display charts → React UI
 ```
@@ -241,11 +284,12 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 
 ## Security Considerations
 
-1. **OAuth Scopes**: Request minimal permissions (Sheets + Drive files created by app)
-2. **Token Storage**: Store OAuth tokens in browser localStorage (encrypted)
-3. **API Keys**: OpenAI API key in `.env` (not committed to git)
-4. **Student Privacy**: Photos stored in teacher's private Drive
-5. **Data Access**: Only teacher can access their own data via OAuth
+1. **OAuth Scopes**: All scopes requested at login (profile + Sheets + Drive). Drive scope is broader than `drive.file` because the app needs to read teacher-uploaded photos.
+2. **Token Storage**: Store OAuth tokens in browser localStorage
+3. **Folder ID**: Stored in browser localStorage; if lost, teacher re-pastes share link
+4. **API Keys**: OpenAI API key in `.env` (not committed to git)
+5. **Student Privacy**: Photos stored in teacher's private Drive, in a folder they control
+6. **Data Access**: Only teacher can access their own data via OAuth
 
 ## Scalability Considerations
 
