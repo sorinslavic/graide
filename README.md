@@ -35,14 +35,23 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 
 ## Status
 
-**Current Phase**: Specification & Design Complete
+**Current Phase**: Foundation Development (Milestone 0 ✅ Complete)
 
-- **Done**: Requirements, architecture, data model, spec Q&A (6/6), wireframes
-- **Next**: Project scaffold (React + Vite + TypeScript)
+- ✅ **Milestone 0**: Project scaffold complete (React + Vite + TypeScript)
+  - Complete type system (sheets, grading, drive)
+  - Service layer interfaces (Auth, Sheets, Drive, AI)
+  - Routing with 7 page placeholders
+  - Tailwind CSS + shadcn/ui components
+  - 917 lines of TypeScript code, builds successfully
+- 🚧 **Next**: Milestone 1 - Auth + Google APIs implementation
+  - Google OAuth login
+  - Google Sheets service (CRUD for all 7 sheets)
+  - Google Drive service (file operations)
+  - Class & Student management UI
 
 ## Quick Start
 
-_(Coming soon — app in development)_
+**Development Setup:**
 
 ```bash
 # 1. Clone the repository
@@ -52,15 +61,19 @@ cd graide
 # 2. Install dependencies
 npm install
 
-# 3. Add your credentials to .env
-#    - Google OAuth client ID/secret (from Cloud Console)
-#    - Gemini API key (free from https://aistudio.google.com/)
+# 3. Configure environment variables
+cp .env.example .env
+# Edit .env and add:
+#   - Google OAuth client ID/secret (from Google Cloud Console)
+#   - Gemini API key (free from https://aistudio.google.com/)
 
-# 4. Start the app
+# 4. Start development server
 npm run dev
 
-# 5. Open http://localhost:3000
+# 5. Open http://localhost:5173
 ```
+
+**Current Status:** Scaffold is complete and runs successfully. Features are being implemented in milestones. See [SCAFFOLD.md](./SCAFFOLD.md) for details on what's built so far.
 
 **Requirements:**
 - Node.js 18+
@@ -75,7 +88,8 @@ npm run dev
 | [Architecture](./docs/architecture.md) | Tech stack, service layer, data flow, Photo Inbox |
 | [Data Model](./docs/data-model.md) | Google Sheets schema (7 sheets), Drive folder structure |
 | [Features](./docs/features.md) | Feature roadmap (MVP → V1 → V2) |
-| [Wireframes](./docs/wireframes.md) | UI wireframes for all key views |
+| [Scaffold Summary](./SCAFFOLD.md) | Milestone 0 completion summary |
+| [Claude Context](./claude.md) | Quick context for Claude Code AI |
 | [Spec Q&A](./docs/spec-qa.md) | Product specification decisions |
 | [Development Guide](./docs/development.md) | Setup, workflow, milestones, troubleshooting |
 

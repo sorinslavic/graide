@@ -68,7 +68,7 @@ Built with input from a real math teacher to solve real classroom challenges.
 - Time reallocated to lesson planning or student interaction
 
 ## Project Status
-**Phase**: Specification Complete, Ready for Development
+**Phase**: Foundation Development (Milestone 0 Complete)
 
 **Completed:**
 - ✅ Problem definition and user research
@@ -77,11 +77,21 @@ Built with input from a real math teacher to solve real classroom challenges.
 - ✅ Architecture designed (local-first, zero-cost approach)
 - ✅ Complete specification (6/6 questions answered)
 - ✅ Data model defined (Google Sheets schema)
+- ✅ UI design reference analyzed (Lovable mock reviewed and documented)
+- ✅ **Milestone 0**: Project scaffold complete
+  - React + Vite + TypeScript setup
+  - Complete type system (sheets, grading, drive)
+  - Service layer interfaces (Auth, Sheets, Drive, AI)
+  - 7 page placeholders with routing
+  - Tailwind CSS + shadcn/ui components
+  - 917 lines of TypeScript, builds successfully
 
 **Next Steps:**
-- [ ] Create UI wireframes/mockups
-- [ ] Setup React + Vite project structure
-- [ ] Begin MVP development
+- 🚧 **Milestone 1**: Auth + Google APIs implementation
+  - Google OAuth login
+  - Google Sheets service (CRUD for all 7 sheets)
+  - Google Drive service (file operations)
+  - Class & Student management UI
 
 ## Documentation
 - [Specification Q&A](./spec-qa.md) - Questions and answers defining the product (6/6 complete)
@@ -89,6 +99,8 @@ Built with input from a real math teacher to solve real classroom challenges.
 - [Features](./features.md) - Feature roadmap and requirements
 - [Architecture](./architecture.md) - Technical architecture and tech stack
 - [Development](./development.md) - Development setup and guidelines
+- [Scaffold Summary](../SCAFFOLD.md) - Milestone 0 completion details
+- [Claude Context](../claude.md) - Quick context for Claude Code AI
 
 ## Team
 - Initial development: Building for real teacher needs

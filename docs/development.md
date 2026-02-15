@@ -214,21 +214,30 @@ When ready to deploy to cloud:
 - [x] Design architecture (local-first, Google APIs)
 - [x] Complete specification (6/6 questions answered)
 - [x] Define data models (Google Sheets schema)
-- [ ] Create wireframes/mockups
+- [x] UI design reference (Lovable mock analyzed and documented)
 
 ### Phase 2: MVP Development (Current)
 
-**Milestone 0: Project Scaffold**
-- [ ] Initialize React + Vite + TypeScript project
-- [ ] Set up folder structure (components/, services/, hooks/, types/)
-- [ ] Configure ESLint, Prettier, Tailwind CSS
-- [ ] Create `.env.example` with required variables
+**Milestone 0: Project Scaffold ✅ COMPLETE**
+- [x] Initialize React + Vite + TypeScript project
+- [x] Set up folder structure (components/, services/, hooks/, types/)
+- [x] Configure ESLint, Prettier, Tailwind CSS
+- [x] Create `.env.example` with required variables
+- [x] Define complete type system (sheets, grading, drive)
+- [x] Create service layer interfaces (Auth, Sheets, Drive, AI)
+- [x] Set up routing with 7 page placeholders
+- [x] Add shadcn/ui components (button, card)
+- [x] Verify build and dev server work successfully
+- [x] Document scaffold in SCAFFOLD.md and claude.md
 
-**Milestone 1: Auth + Google APIs (Sheets/Drive)**
+**Status:** 917 lines of TypeScript code, builds successfully, dev server runs at localhost:5173
+
+**Milestone 1: Auth + Google APIs (Sheets/Drive) 🚧 NEXT**
 - [ ] Implement Google OAuth login service (interface + implementation)
 - [ ] Implement Google Sheets service (CRUD operations)
 - [ ] Implement Google Drive service (upload/download/list)
-- [ ] Auto-create "graide-data" spreadsheet with 6 sheets on first login
+- [ ] Auto-create "graide-data" spreadsheet with 7 sheets on first login
+- [ ] Build Class & Student management UI (simple forms)
 
 **Milestone 2: Class & Student Management**
 - [ ] Build class management UI (create/edit/delete classes)
