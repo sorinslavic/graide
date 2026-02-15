@@ -49,36 +49,114 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
   - Google Drive service (file operations)
   - Class & Student management UI
 
-## Quick Start
+## Getting Started
 
-**Development Setup:**
+### Prerequisites
 
+Before you begin, ensure you have:
+- **Node.js 18+** installed ([download here](https://nodejs.org/))
+- **npm** (comes with Node.js)
+- **Git** for cloning the repository
+
+Check your versions:
 ```bash
-# 1. Clone the repository
-git clone https://github.com/sorinslavic/graide.git
-cd graide
-
-# 2. Install dependencies
-npm install
-
-# 3. Configure environment variables
-cp .env.example .env
-# Edit .env and add:
-#   - Google OAuth client ID/secret (from Google Cloud Console)
-#   - Gemini API key (free from https://aistudio.google.com/)
-
-# 4. Start development server
-npm run dev
-
-# 5. Open http://localhost:5173
+node --version  # Should be 18.x or higher
+npm --version   # Should be 9.x or higher
 ```
 
-**Current Status:** Scaffold is complete and runs successfully. Features are being implemented in milestones. See [SCAFFOLD.md](./SCAFFOLD.md) for details on what's built so far.
+### Installation & Running the Project
 
-**Requirements:**
-- Node.js 18+
-- Google account (for OAuth + Sheets + Drive)
-- Gemini API key (free from [AI Studio](https://aistudio.google.com/) — no credit card)
+**Step 1: Clone the repository**
+```bash
+git clone https://github.com/sorinslavic/graide.git
+cd graide
+```
+
+**Step 2: Install dependencies**
+```bash
+npm install
+```
+This will install all required packages (~357 packages, takes 30-60 seconds).
+
+**Step 3: Start the development server**
+```bash
+npm run dev
+```
+
+You should see:
+```
+  VITE v6.4.1  ready in 329 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+
+**Step 4: Open in your browser**
+
+Navigate to: **http://localhost:5173**
+
+You'll see the grAIde login page with the logo and Google sign-in button.
+
+### Available Pages to Explore
+
+Once the server is running, you can navigate to:
+
+- **Login**: http://localhost:5173/
+- **Dashboard**: http://localhost:5173/dashboard
+- **Photo Inbox**: http://localhost:5173/inbox
+- **Classes**: http://localhost:5173/classes
+- **Analytics**: http://localhost:5173/analytics
+
+All pages are placeholder UIs right now - features are being implemented in milestones.
+
+### Building for Production
+
+To create a production-ready build:
+
+```bash
+# Build the project
+npm run build
+```
+
+This creates an optimized build in the `dist/` folder.
+
+To preview the production build:
+```bash
+npm run preview
+```
+
+Opens at: **http://localhost:4173**
+
+### Current Status
+
+✅ **What Works:**
+- Development server runs and hot-reloads
+- All routes and navigation
+- Tailwind CSS styling
+- TypeScript compilation
+- Production builds
+
+❌ **What's Not Yet Implemented:**
+- Google OAuth login (Milestone 1)
+- Data persistence to Google Sheets (Milestone 1)
+- Photo upload to Drive (Milestone 2)
+- AI grading (Milestone 3)
+
+See [SCAFFOLD.md](./SCAFFOLD.md) for complete details on what's built.
+
+### Optional: Configure Environment Variables
+
+For future milestones that require Google APIs:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add:
+- Google OAuth client ID/secret (from [Google Cloud Console](https://console.cloud.google.com))
+- Gemini API key (free from [AI Studio](https://aistudio.google.com/))
+
+**Note:** You don't need these yet - the app runs without them for now.
 
 ## Documentation
 
