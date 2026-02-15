@@ -17,10 +17,10 @@ grAIde is a locally-hosted web application that uses Google Sheets as a database
 ### Backend
 - **Runtime**: **None required for MVP** ✅
 - **Architecture**: Frontend-only application with **service layer abstraction**
-- **APIs**: Direct integration with Google APIs and OpenAI from browser (MVP)
+- **APIs**: Direct integration with Google APIs and Gemini API from browser (MVP)
 - **Future**: Service implementations can be swapped to call a backend server without changing UI code
 
-**Rationale**: By using Google Sheets API, Drive API, and OpenAI API directly from the frontend, we eliminate the need for a backend server for MVP. Since the app runs on localhost (teacher's laptop), API keys in `.env` are safe. A clean service layer with TypeScript interfaces ensures we can extract a backend later by swapping implementations — zero UI changes required.
+**Rationale**: By using Google Sheets API, Drive API, and Gemini API directly from the frontend, we eliminate the need for a backend server for MVP. Since the app runs on localhost (teacher's laptop), API keys in `.env` are safe. A clean service layer with TypeScript interfaces ensures we can extract a backend later by swapping implementations — zero UI changes required.
 
 ### Service Layer Pattern
 The app uses **TypeScript interfaces** to separate UI from business logic, similar to Java's interface/implementation pattern:
@@ -34,7 +34,7 @@ export interface AIGradingService {
 // MVP Implementation (direct browser call)
 export class LocalAIGradingService implements AIGradingService {
   async gradeSubmission(photos, answerKey) {
-    // calls OpenAI directly from browser
+    // calls Gemini API directly from browser
   }
 }
 
@@ -91,7 +91,10 @@ export class RemoteAIGradingService implements AIGradingService {
 - ✅ Teacher can browse organized photos in Drive anytime
 
 ### AI/ML
-- **Primary AI**: **OpenAI GPT-4 Vision API** (or Claude Vision)
+- **Primary AI**: **Google Gemini API** (via AI Studio free tier)
+- **Model**: Gemini 2.5 Flash (fast, multimodal, free tier available)
+- **Auth**: Free API key from [AI Studio](https://aistudio.google.com/) — teacher gets one in 2 minutes, stored in `.env`
+- **Endpoint**: `generativelanguage.googleapis.com`
 - **Use Cases**:
   - Photo analysis (reading handwritten math)
   - Answer evaluation (right/wrong calculations)
@@ -101,7 +104,26 @@ export class RemoteAIGradingService implements AIGradingService {
   - Pattern detection (class-wide trends)
   - Feedback generation (what to review)
 
-**Rationale**: Vision models can analyze test photos directly without OCR step, handling both text and geometric drawings.
+**Free tier limits** (no credit card required):
+| Model | Free RPM | Free Daily Requests |
+|-------|----------|---------------------|
+| Gemini 2.5 Flash | ~10 RPM | ~1,000/day |
+| Gemini 2.5 Flash-Lite | 15 RPM | ~1,000/day |
+| Gemini 2.5 Pro | 5 RPM | ~1,000/day |
+
+A teacher grading 50 tests/day fits easily within the free tier.
+
+**Why Gemini over OpenAI?**
+- ✅ Free tier — zero cost for typical teacher usage
+- ✅ No credit card required — teacher just grabs an API key from AI Studio
+- ✅ Excellent vision/multimodal — reads handwriting, math formulas, geometric drawings
+- ✅ Same Google ecosystem — consistent with Sheets/Drive integration
+- ✅ Each teacher uses their own key — no shared billing or infrastructure
+- ✅ Runs on localhost — API key in `.env` is safe (never exposed to browser network tab in production)
+
+**Why not OAuth for Gemini?** We investigated using the teacher's Google OAuth token directly for Gemini API calls (eliminating the API key entirely). This technically works but requires the `cloud-platform` OAuth scope — far too broad for a grading app. A dedicated free API key is simpler and safer.
+
+**Rationale**: Vision models can analyze test photos directly without OCR step, handling both text and geometric drawings. Gemini Flash provides the best cost/quality tradeoff for grading use cases.
 
 ### Authentication & Data Access
 - **Auth Provider**: **Google OAuth 2.0**
@@ -176,13 +198,13 @@ Instead of the app magically creating files in Drive, the **teacher controls the
 │      │                    │                   │        │
 └──────┼────────────────────┼───────────────────┼────────┘
        │                    │                   │
-       │ Google            │ Google            │ OpenAI
-       │ Sheets API        │ Drive API         │ API
+       │ Google            │ Google            │ Google
+       │ Sheets API        │ Drive API         │ Gemini API
        │                    │                   │
    ┌───▼─────────┐     ┌────▼─────────┐    ┌───▼────────┐
-   │   Google    │     │   Google     │    │  GPT-4     │
-   │   Sheets    │     │    Drive     │    │  Vision    │
-   │             │     │              │    │    API     │
+   │   Google    │     │   Google     │    │  Gemini    │
+   │   Sheets    │     │    Drive     │    │  2.5 Flash │
+   │             │     │              │    │            │
    │ • Teachers  │     │ • Test       │    │            │
    │ • Classes   │     │   Photos     │    │ • Grade    │
    │ • Students  │     │ • Organized  │    │   Tests    │
@@ -227,7 +249,7 @@ App Startup (returning):
 
 Grading Session:
 ├─ List test photos → Read from Drive (test-scans subfolder)
-├─ Send to AI → OpenAI API
+├─ Send to AI → Gemini API
 ├─ Display results → React UI
 └─ Save grades → Write to Sheets
 
@@ -372,7 +394,7 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 2. **Sheets Service** (`services/google/sheets`): CRUD operations on Google Sheets
 3. **Drive Service** (`services/google/drive`): List, move, rename, create folders in Drive
 4. **Photo Inbox Service** (`services/photos/`): List unassigned photos, assign to student/test, move to organized folder, track in Results sheet
-5. **AI Grading Service** (`services/ai/`): Send photos to GPT-4 Vision, parse responses
+5. **AI Grading Service** (`services/ai/`): Send photos to Gemini Vision, parse responses
 6. **Grading Engine** (`services/grading/`): Orchestrate photo → AI → grade workflow
 7. **Analytics Engine** (`services/analytics/`): Query Sheets for patterns and trends
 8. **UI Components** (`components/`): React components for inbox, grading, management, analytics
@@ -382,7 +404,7 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 ### External Dependencies
 - `@react-oauth/google` - Google OAuth
 - `googleapis` - Google Sheets & Drive APIs
-- `openai` - OpenAI API client
+- `@google/generative-ai` - Google Gemini API client
 - `react`, `react-dom` - UI framework
 - `vite` - Build tool
 - Chart library (TBD) - For analytics visualizations
@@ -420,7 +442,7 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 1. **OAuth Scopes**: All scopes requested at login (profile + Sheets + Drive). Drive scope is broader than `drive.file` because the app needs to read teacher-uploaded photos.
 2. **Token Storage**: Store OAuth tokens in browser localStorage
 3. **Folder ID**: Stored in browser localStorage; if lost, teacher re-pastes share link
-4. **API Keys**: OpenAI API key in `.env` (not committed to git)
+4. **API Keys**: Gemini API key in `.env` (not committed to git, free tier from AI Studio)
 5. **Student Privacy**: Photos stored in teacher's private Drive, in a folder they control
 6. **Data Access**: Only teacher can access their own data via OAuth
 
@@ -429,7 +451,7 @@ Each service is defined as a **TypeScript interface** with a concrete implementa
 ### Current Limitations (Acceptable for MVP)
 - Google Sheets: ~10M cells (sufficient for hundreds of students, thousands of tests)
 - Drive API: 1000 requests/100 seconds (plenty for grading workflow)
-- OpenAI API: Rate limits vary by tier (gradual grading is fine)
+- Gemini API: Free tier ~1,000 requests/day, ~10 RPM (plenty for grading workflow)
 
 ### When to Migrate
 If app gains traction and needs:
@@ -453,7 +475,7 @@ Then consider:
 | Frontend | React + Vite | Next.js, Vue, Svelte | Fast dev, widely known |
 | Database | Google Sheets | PostgreSQL, SQLite, MongoDB | Zero cost, teacher-editable |
 | Storage | Google Drive | AWS S3, Cloudinary | Zero cost, teacher ownership |
-| AI | OpenAI Vision | Claude Vision, local models | Best vision quality |
+| AI | Gemini 2.5 Flash | OpenAI Vision, Claude Vision | Free tier, same Google ecosystem, excellent vision |
 | Deployment | Local | Vercel, Netlify, Railway | Zero cost, zero complexity |
 
 ## Notes
