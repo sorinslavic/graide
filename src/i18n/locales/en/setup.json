@@ -5,16 +5,16 @@
     "skip_link": "I'll do this later"
   },
   "folder_setup": {
-    "title": "Step 1: Create a Google Drive folder",
-    "intro": "grAIde needs a shared folder where you'll upload test photos from your phone.",
+    "title": "Step 1: Create your grAIde workspace folder",
+    "intro": "grAIde needs a Google Drive folder to store your data spreadsheet and test photos. This will be your grAIde workspace.",
     "instructions": {
       "title": "Here's how to create it:",
       "step1": "Open Google Drive on your computer",
-      "step2": "Create a new folder (e.g., \"grAIde Photos\")",
+      "step2": "Create a new folder (e.g., \"grAIde Workspace\")",
       "step3": "Right-click the folder → Share → Copy link",
       "step4": "Paste the link below"
     },
-    "input_label": "Google Drive folder share link",
+    "input_label": "Google Drive workspace folder share link",
     "input_placeholder": "https://drive.google.com/drive/folders/...",
     "help_text": "The link should look like: https://drive.google.com/drive/folders/1abc...xyz",
     "validation": {
@@ -24,19 +24,19 @@
   },
   "confirmation": {
     "title": "All set!",
-    "message": "grAIde is ready to use. You can now:",
+    "message": "grAIde will automatically create a \"graide-data\" spreadsheet in this folder. You can now:",
     "features": {
-      "upload": "Upload test photos to your Drive folder",
+      "upload": "Upload test photos to this folder from your phone",
       "organize": "Sort them in the Photo Inbox",
       "grade": "Let AI grade them automatically",
-      "review": "Review and override AI suggestions"
+      "review": "Review and edit everything in the spreadsheet"
     },
     "cta": "Let's get started!"
   },
   "status": {
     "checking_folder": "Checking folder access...",
-    "creating_spreadsheet": "Creating graide-data spreadsheet...",
+    "creating_spreadsheet": "Creating graide-data spreadsheet in your folder...",
     "setting_up": "Setting up your workspace...",
-    "complete": "Setup complete!"
+    "complete": "Workspace setup complete!"
   }
 }

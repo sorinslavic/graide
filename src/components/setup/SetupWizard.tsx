@@ -108,6 +108,18 @@ export default function SetupWizard({ onComplete, onSkip }: SetupWizardProps) {
             <li>{t('folder_setup.instructions.step4')}</li>
           </ol>
         </div>
+
+        {/* What will be created */}
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs">
+          <p className="font-medium text-blue-900 mb-2">
+            📁 {t('common:app_name')} Workspace /
+          </p>
+          <ul className="ml-4 space-y-1 text-blue-800">
+            <li>📊 graide-data (spreadsheet - auto-created)</li>
+            <li>📸 test-photos/ (you upload from phone)</li>
+            <li>📂 organized/ (grAIde organizes photos here)</li>
+          </ul>
+        </div>
       </div>
 
       {/* Form */}

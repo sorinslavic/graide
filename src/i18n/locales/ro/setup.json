@@ -5,16 +5,16 @@
     "skip_link": "O fac mai târziu"
   },
   "folder_setup": {
-    "title": "Pasul 1: Creează un folder în Google Drive",
-    "intro": "grAIde are nevoie de un folder unde vei încărca pozele testelor de pe telefon.",
+    "title": "Pasul 1: Creează folderul tău grAIde",
+    "intro": "grAIde are nevoie de un folder în Google Drive pentru a stoca tabelul cu date și pozele testelor. Acesta va fi spațiul tău de lucru grAIde.",
     "instructions": {
       "title": "Iată cum îl creezi:",
       "step1": "Deschide Google Drive pe computer",
-      "step2": "Creează un folder nou (de ex., \"Poze grAIde\")",
+      "step2": "Creează un folder nou (de ex., \"grAIde Spațiu de Lucru\")",
       "step3": "Click dreapta pe folder → Distribuie → Copiază linkul",
       "step4": "Lipește linkul mai jos"
     },
-    "input_label": "Link de distribuire folder Google Drive",
+    "input_label": "Link de distribuire folder grAIde",
     "input_placeholder": "https://drive.google.com/drive/folders/...",
     "help_text": "Linkul ar trebui să arate așa: https://drive.google.com/drive/folders/1abc...xyz",
     "validation": {
@@ -24,19 +24,19 @@
   },
   "confirmation": {
     "title": "Gata!",
-    "message": "grAIde e pregătit de utilizare. Acum poți:",
+    "message": "grAIde va crea automat un tabel \"graide-data\" în acest folder. Acum poți:",
     "features": {
-      "upload": "Încarcă poze cu teste în folderul tău Drive",
+      "upload": "Încarcă poze cu teste în acest folder de pe telefon",
       "organize": "Sortează-le în Inbox-ul de Poze",
       "grade": "Lasă AI-ul să le corecteze automat",
-      "review": "Revizuiește și modifică sugestiile AI"
+      "review": "Revizuiește și editează totul în tabel"
     },
     "cta": "Hai să începem!"
   },
   "status": {
     "checking_folder": "Verific accesul la folder...",
-    "creating_spreadsheet": "Creez tabelul graide-data...",
+    "creating_spreadsheet": "Creez tabelul graide-data în folderul tău...",
     "setting_up": "Configurez spațiul tău de lucru...",
-    "complete": "Configurare completă!"
+    "complete": "Spațiu de lucru configurat!"
   }
 }
