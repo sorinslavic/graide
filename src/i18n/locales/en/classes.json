@@ -1,0 +1,51 @@
+{
+  "page_title": "Classes",
+  "empty_state": {
+    "title": "No classes yet",
+    "subtitle": "Let's get started by adding your first class!",
+    "description": "Create a class by selecting a subject, school year, and adding your students.",
+    "cta": "Add Your First Class"
+  },
+  "add_class_button": "Add Class",
+  "wizard": {
+    "title": "Add New Class",
+    "step1_title": "Select Subject",
+    "step1_subtitle": "Which subject will you teach to this class?",
+    "step2_title": "School Year",
+    "step2_subtitle": "Select the academic year",
+    "step3_title": "Class Name",
+    "step3_subtitle": "Enter the class identifier (e.g., 5A, 7B)",
+    "step4_title": "Students",
+    "step4_subtitle": "Add students to this class",
+    "subject_label": "Subject",
+    "subject_placeholder": "Select a subject...",
+    "custom_subject_label": "Custom Subject",
+    "custom_subject_placeholder": "Enter subject name",
+    "year_label": "School Year",
+    "class_name_label": "Class Name",
+    "class_name_placeholder": "e.g., 5A, 7B, 8C",
+    "grade_level_label": "Grade Level",
+    "existing_class_notice": "Class {{className}} already exists for {{year}}. Students will be shared across subjects.",
+    "existing_students_count": "{{count}} students found",
+    "bulk_input_label": "Student Names (one per line)",
+    "bulk_input_placeholder": "Maria Popescu\nAndrei Ionescu\nElena Marinescu\n...",
+    "bulk_input_help": "Paste student names, one per line. You can add student numbers later.",
+    "next": "Next",
+    "previous": "Previous",
+    "create": "Create Class",
+    "cancel": "Cancel"
+  },
+  "class_card": {
+    "students_count": "{{count}} student",
+    "students_count_plural": "{{count}} students",
+    "edit": "Edit",
+    "delete": "Delete",
+    "grade": "Grade {{level}}"
+  },
+  "delete_confirm": {
+    "title": "Delete Class?",
+    "message": "Are you sure you want to delete {{subject}} - {{className}}? This will remove all associated tests and grades.",
+    "cancel": "Cancel",
+    "confirm": "Delete Class"
+  }
+}

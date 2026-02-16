@@ -1,0 +1,51 @@
+{
+  "page_title": "Clase",
+  "empty_state": {
+    "title": "Nicio clasă încă",
+    "subtitle": "Hai să începem adăugând prima ta clasă!",
+    "description": "Creează o clasă selectând materia, anul școlar și adăugând elevii tăi.",
+    "cta": "Adaugă Prima Clasă"
+  },
+  "add_class_button": "Adaugă Clasă",
+  "wizard": {
+    "title": "Adaugă Clasă Nouă",
+    "step1_title": "Selectează Materia",
+    "step1_subtitle": "Ce materie vei preda acestei clase?",
+    "step2_title": "Anul Școlar",
+    "step2_subtitle": "Selectează anul academic",
+    "step3_title": "Numele Clasei",
+    "step3_subtitle": "Introdu identificatorul clasei (ex: 5A, 7B)",
+    "step4_title": "Elevi",
+    "step4_subtitle": "Adaugă elevii acestei clase",
+    "subject_label": "Materie",
+    "subject_placeholder": "Selectează o materie...",
+    "custom_subject_label": "Materie Personalizată",
+    "custom_subject_placeholder": "Introdu numele materiei",
+    "year_label": "Anul Școlar",
+    "class_name_label": "Numele Clasei",
+    "class_name_placeholder": "ex: 5A, 7B, 8C",
+    "grade_level_label": "Nivel",
+    "existing_class_notice": "Clasa {{className}} există deja pentru {{year}}. Elevii vor fi comuni tuturor materiilor.",
+    "existing_students_count": "{{count}} elevi găsiți",
+    "bulk_input_label": "Numele Elevilor (unul pe linie)",
+    "bulk_input_placeholder": "Maria Popescu\nAndrei Ionescu\nElena Marinescu\n...",
+    "bulk_input_help": "Lipește numele elevilor, câte unul pe linie. Poți adăuga numerele elevilor mai târziu.",
+    "next": "Următorul",
+    "previous": "Înapoi",
+    "create": "Creează Clasa",
+    "cancel": "Anulează"
+  },
+  "class_card": {
+    "students_count": "{{count}} elev",
+    "students_count_plural": "{{count}} elevi",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "grade": "Clasa {{level}}"
+  },
+  "delete_confirm": {
+    "title": "Ștergi Clasa?",
+    "message": "Ești sigur că vrei să ștergi {{subject}} - {{className}}? Aceasta va elimina toate testele și notele asociate.",
+    "cancel": "Anulează",
+    "confirm": "Șterge Clasa"
+  }
+}

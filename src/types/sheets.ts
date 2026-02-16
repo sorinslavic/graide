@@ -4,23 +4,27 @@
  */
 
 export interface Class {
-  id: string;
-  name: string;
-  grade_level: number;
-  school_year: string;
+  id: string; // Internal ID for database operations
+  subject: string; // e.g., "Matematică", "Limba Română"
+  class_name: string; // e.g., "5A", "7B"
+  grade_level: number; // 5, 6, 7, 8
+  school_year: string; // e.g., "2025-2026"
   created_at: string;
 }
 
 export interface Student {
   id: string;
-  class_id: string;
+  class_name: string; // e.g., "5A" - shared across all subjects
+  school_year: string; // e.g., "2025-2026"
   name: string;
-  student_num?: string;
+  student_num?: string; // Optional student number/ID
 }
 
 export interface Test {
   id: string;
-  class_id: string;
+  subject: string; // Reference to Class.subject
+  class_name: string; // Reference to Class.class_name
+  school_year: string; // Reference to Class.school_year
   name: string;
   date: string;
   total_points: number;
@@ -31,10 +35,11 @@ export interface Test {
 
 export interface Result {
   id: string;
-  student_id: string;
-  test_id: string;
-  class_id: string;
-  school_year: string;
+  student_id: string; // Reference to Student.id
+  test_id: string; // Reference to Test.id
+  subject: string; // Reference to Class.subject (denormalized)
+  class_name: string; // Reference to Class.class_name (denormalized)
+  school_year: string; // Reference to Class.school_year (denormalized)
   drive_file_id: string;
   file_path: string;
   total_score?: number;
