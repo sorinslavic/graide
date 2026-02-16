@@ -28,5 +28,10 @@
   "language": {
     "english": "English",
     "romanian": "Română"
+  },
+  "account": {
+    "workspace": "Workspace",
+    "not_configured": "Not configured",
+    "open_folder": "Open in Google Drive"
   }
 }
