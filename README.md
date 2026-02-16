@@ -23,11 +23,13 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 - **Google OAuth Authentication**: Secure login with Drive & Sheets permissions
 - **Workspace Setup**: Automated workspace initialization with Drive folder + spreadsheet
 - **Google Sheets Database**: 8 sheets (README, Classes, Students, Tests, Results, Mistakes, Rubrics, Config)
-- **Class Management**: Full CRUD for classes with school year tracking
-- **Student Management**: Full CRUD for students linked to classes
+- **Subject-Based Class Management**: 4-step wizard for creating classes with subject selection (12 predefined Romanian subjects + custom), school year, class name, and student roster management
+- **Shared Student Rosters**: Multiple subjects can share the same class roster (e.g., Math-5A and Romanian-5A both use "5A" students)
+- **Bulk Student Input**: Paste student names (one per line) or reuse existing rosters
 - **Multi-language Support**: Romanian (default) and English with persistent language selection
 - **Account Management**: View all configuration, reset workspace, logout
 - **Auto-Documentation**: README sheet in spreadsheet explains data structure
+- **Vibrant Design**: Gradient-based UI with animations, shimmer effects, and modern glass-morphism
 
 **🚧 In Progress:**
 - **Photo Inbox**: Bulk photo upload and student assignment
@@ -85,6 +87,15 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ## Recent Updates
 
 ### February 2026
+- **📚 Subject-Based Class Management**: Complete class management system
+  - 4-step wizard: Subject → School Year → Class Name → Students
+  - 12 predefined Romanian subjects (Math, Romanian, English, History, etc.) + custom subjects
+  - Auto-defaults to current academic year (Sept-Aug calendar)
+  - Detects and reuses existing student rosters across subjects
+  - Bulk student input (paste names, one per line)
+  - Classes page with vibrant empty state and grouped-by-year list view
+  - Delete functionality with confirmation dialogs
+  - Full i18n support (Romanian/English)
 - **🎨 Vibrant Gradient Design**: Beautiful gradient cards with animations, shimmer effects, and glass-morphism
   - Purple/pink/rose gradient for Photo Inbox
   - Blue/cyan/teal gradient for Classes
