@@ -23,6 +23,7 @@ const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
  * Schema definitions for each sheet (column headers)
  */
 const SHEET_SCHEMAS = {
+  README: [], // No headers - will be populated with documentation
   [SHEET_NAMES.CLASSES]: [
     'id',
     'name',
@@ -231,9 +232,10 @@ export class LocalSheetsService implements SheetsService {
       }
     );
 
-    // Step 3: Add headers to each sheet
-    const requests = Object.entries(SHEET_SCHEMAS).map(
-      ([sheetName, headers]) => ({
+    // Step 3: Add headers to data sheets
+    const headerRequests = Object.entries(SHEET_SCHEMAS)
+      .filter(([sheetName]) => sheetName !== 'README' && sheetName.length > 0)
+      .map(([sheetName, headers]) => ({
         updateCells: {
           range: {
             sheetId: spreadsheet.sheets.find(
@@ -258,8 +260,7 @@ export class LocalSheetsService implements SheetsService {
           ],
           fields: 'userEnteredValue,userEnteredFormat',
         },
-      })
-    );
+      }));
 
     await fetch(`${SHEETS_API_BASE}/${spreadsheetId}:batchUpdate`, {
       method: 'POST',
@@ -267,10 +268,321 @@ export class LocalSheetsService implements SheetsService {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ requests }),
+      body: JSON.stringify({ requests: headerRequests }),
     });
 
+    // Step 4: Populate README sheet
+    await this.populateReadme(spreadsheetId, spreadsheet.sheets, token);
+
     return spreadsheetId;
+  }
+
+  /**
+   * Populate README sheet with documentation
+   */
+  private async populateReadme(
+    spreadsheetId: string,
+    sheets: { properties: { title: string; sheetId: number } }[],
+    token: string
+  ): Promise<void> {
+    const readmeSheet = sheets.find((s) => s.properties.title === 'README');
+    if (!readmeSheet) return;
+
+    const readmeContent = [
+      ['📚 grAIde Data - README', '', '', ''],
+      ['', '', '', ''],
+      ['Welcome to grAIde!', '', '', ''],
+      [
+        'This spreadsheet contains all your grading data. You can view and edit it directly in Google Sheets.',
+        '',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['📊 SHEETS OVERVIEW', '', '', ''],
+      ['', '', '', ''],
+      ['Sheet', 'Purpose', 'Key Fields', 'Notes'],
+      [
+        'Classes',
+        'Class rosters (5A, 7B, etc.)',
+        'name, grade_level, school_year',
+        'One row per class',
+      ],
+      [
+        'Students',
+        'Student information',
+        'name, class_id, student_num',
+        'Linked to Classes via class_id',
+      ],
+      [
+        'Tests',
+        'Test metadata',
+        'name, date, total_points, num_questions',
+        'Linked to Classes via class_id',
+      ],
+      [
+        'Results',
+        'Student test submissions',
+        'student_id, test_id, total_score, status',
+        'Central table linking photos to grades',
+      ],
+      [
+        'Mistakes',
+        'Error tracking per question',
+        'result_id, question_num, mistake_type, points_deducted',
+        'Linked to Results via result_id',
+      ],
+      [
+        'Rubrics',
+        'Answer keys per test',
+        'test_id, question_num, answer_key, max_points',
+        'Linked to Tests via test_id',
+      ],
+      [
+        'Config',
+        'App settings (key-value)',
+        'key, value',
+        'System configuration',
+      ],
+      ['', '', '', ''],
+      ['🔗 RELATIONSHIPS', '', '', ''],
+      ['', '', '', ''],
+      [
+        'Classes → Students',
+        'One class has many students (class_id)',
+        '',
+        '',
+      ],
+      ['Classes → Tests', 'One class has many tests (class_id)', '', ''],
+      [
+        'Students + Tests → Results',
+        'Each student submission for a test (student_id, test_id)',
+        '',
+        '',
+      ],
+      [
+        'Results → Mistakes',
+        'Each result can have multiple mistakes (result_id)',
+        '',
+        '',
+      ],
+      [
+        'Tests → Rubrics',
+        'Each test has answer keys for questions (test_id)',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['📝 FIELD DESCRIPTIONS', '', '', ''],
+      ['', '', '', ''],
+      ['Field', 'Type', 'Description', 'Example'],
+      ['id', 'String', 'Unique identifier (auto-generated)', '1234567890-abc123'],
+      ['class_id', 'String', 'Reference to Classes.id', '1234567890-abc123'],
+      ['student_id', 'String', 'Reference to Students.id', '1234567890-abc123'],
+      ['test_id', 'String', 'Reference to Tests.id', '1234567890-abc123'],
+      ['result_id', 'String', 'Reference to Results.id', '1234567890-abc123'],
+      ['school_year', 'String', 'Academic year', '2025-2026'],
+      ['grade_level', 'String', 'Grade number', '5, 6, 7, 8'],
+      ['status', 'String', 'Grading status', 'pending_grade, graded, reviewed'],
+      [
+        'mistake_type',
+        'String',
+        'Error category',
+        'wrong_formula, calculation_error, concept_error',
+      ],
+      ['drive_file_id', 'String', 'Google Drive file ID', 'abc123xyz789'],
+      [
+        'file_path',
+        'String',
+        'Path in organized/ folder',
+        'organized/2025-2026/5A/Math-Test-3/maria.jpg',
+      ],
+      [
+        'ai_confidence',
+        'Number',
+        'AI confidence score (0.0-1.0)',
+        '0.95',
+      ],
+      ['', '', '', ''],
+      ['✏️ EDITING DATA', '', '', ''],
+      ['', '', '', ''],
+      [
+        '✅ You can edit:',
+        'Student names, test metadata, grades, teacher notes',
+        '',
+        '',
+      ],
+      [
+        '⚠️ Be careful:',
+        'Do not delete ID columns or change IDs (breaks relationships)',
+        '',
+        '',
+      ],
+      [
+        '🚫 Do not edit:',
+        'drive_file_id, file_path (managed by grAIde)',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['💡 TIPS', '', '', ''],
+      ['', '', '', ''],
+      [
+        '• Filter & Sort:',
+        'Use Google Sheets filters to analyze data',
+        '',
+        '',
+      ],
+      [
+        '• Export:',
+        'Download as Excel (File → Download → Microsoft Excel)',
+        '',
+        '',
+      ],
+      [
+        '• Backup:',
+        'Google Sheets auto-saves, but you can make copies for backup',
+        '',
+        '',
+      ],
+      [
+        '• Version History:',
+        'File → Version history to see/restore previous versions',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['🔍 COMMON QUERIES', '', '', ''],
+      ['', '', '', ''],
+      [
+        'Q: How do I see all grades for Class 5A?',
+        'A: Go to Results sheet, filter by class_id',
+        '',
+        '',
+      ],
+      [
+        'Q: How do I find mistakes for a specific student?',
+        'A: Go to Mistakes sheet, join with Results using result_id',
+        '',
+        '',
+      ],
+      [
+        'Q: Can I edit student names?',
+        'A: Yes! Edit directly in Students sheet',
+        '',
+        '',
+      ],
+      [
+        'Q: Can I change test scores?',
+        'A: Yes! Edit total_score in Results sheet',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['📧 NEED HELP?', '', '', ''],
+      ['', '', '', ''],
+      [
+        'grAIde is open source!',
+        'Report issues at: https://github.com/sorinslavic/graide',
+        '',
+        '',
+      ],
+      ['', '', '', ''],
+      ['Last updated: ' + new Date().toISOString().split('T')[0], '', '', ''],
+    ];
+
+    // Convert to cell format with styling
+    const rows = readmeContent.map((row, rowIndex) => ({
+      values: row.map((cell, colIndex) => {
+        const isTitle = rowIndex === 0;
+        const isHeader =
+          rowIndex === 5 ||
+          rowIndex === 7 ||
+          rowIndex === 18 ||
+          rowIndex === 28 ||
+          rowIndex === 41 ||
+          rowIndex === 47 ||
+          rowIndex === 53;
+        const isColumnHeader =
+          rowIndex === 7 ||
+          rowIndex === 28 ||
+          rowIndex === 30;
+
+        return {
+          userEnteredValue: { stringValue: cell },
+          userEnteredFormat: {
+            textFormat: {
+              bold: isTitle || isHeader || isColumnHeader,
+              fontSize: isTitle ? 16 : isHeader ? 14 : 10,
+            },
+            backgroundColor: isTitle
+              ? { red: 0.2, green: 0.4, blue: 0.7 }
+              : isHeader
+              ? { red: 0.95, green: 0.95, blue: 0.95 }
+              : isColumnHeader
+              ? { red: 0.9, green: 0.9, blue: 0.9 }
+              : { red: 1, green: 1, blue: 1 },
+            textFormat: {
+              ...{ bold: isTitle || isHeader || isColumnHeader },
+              foregroundColor: isTitle
+                ? { red: 1, green: 1, blue: 1 }
+                : { red: 0, green: 0, blue: 0 },
+            },
+            wrapStrategy: 'WRAP',
+          },
+        };
+      }),
+    }));
+
+    await fetch(`${SHEETS_API_BASE}/${spreadsheetId}:batchUpdate`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requests: [
+          {
+            updateCells: {
+              range: {
+                sheetId: readmeSheet.properties.sheetId,
+                startRowIndex: 0,
+                endRowIndex: rows.length,
+                startColumnIndex: 0,
+                endColumnIndex: 4,
+              },
+              rows,
+              fields: 'userEnteredValue,userEnteredFormat',
+            },
+          },
+          // Set column widths
+          {
+            updateDimensionProperties: {
+              range: {
+                sheetId: readmeSheet.properties.sheetId,
+                dimension: 'COLUMNS',
+                startIndex: 0,
+                endIndex: 1,
+              },
+              properties: { pixelSize: 200 },
+              fields: 'pixelSize',
+            },
+          },
+          {
+            updateDimensionProperties: {
+              range: {
+                sheetId: readmeSheet.properties.sheetId,
+                dimension: 'COLUMNS',
+                startIndex: 1,
+                endIndex: 4,
+              },
+              properties: { pixelSize: 250 },
+              fields: 'pixelSize',
+            },
+          },
+        ],
+      }),
+    });
   }
 
   /**
