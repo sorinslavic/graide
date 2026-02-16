@@ -1,5 +1,19 @@
 # Development Guide
 
+## Milestone Progress
+
+**Milestone 0**: ✅ Complete - Project scaffold with types, services, routing
+**Milestone 1**: 🚧 In Progress - Phase 1/5 Complete
+- ✅ **Phase 1**: Google OAuth authentication (login, logout, protected routes)
+- ⏳ **Phase 2**: Google Sheets service
+- ⏳ **Phase 3**: Google Drive service
+- ⏳ **Phase 4**: First-time setup wizard
+- ⏳ **Phase 5**: Class & Student management UI
+
+See [MILESTONE-1-PLAN.md](../MILESTONE-1-PLAN.md) for detailed implementation plan.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -168,14 +182,14 @@ instead — no component changes needed.
 ## Testing
 
 ### Manual Testing Checklist
-- [ ] OAuth login flow works
-- [ ] Can create/edit classes
-- [ ] Can add/edit students
-- [ ] Can upload test photos to Drive
-- [ ] AI grading produces correct results
-- [ ] Grades save to Sheets correctly
-- [ ] Analytics dashboard displays data
-- [ ] Can edit data in Sheets and see changes in app
+- [x] **OAuth login flow works** (Phase 1 ✅)
+- [ ] Can create/edit classes (Phase 5)
+- [ ] Can add/edit students (Phase 5)
+- [ ] Can upload test photos to Drive (Milestone 2)
+- [ ] AI grading produces correct results (Milestone 3)
+- [ ] Grades save to Sheets correctly (Phase 2)
+- [ ] Analytics dashboard displays data (Milestone 5)
+- [ ] Can edit data in Sheets and see changes in app (Phase 2)
 
 ### Automated Testing (Future)
 - Unit tests: `npm run test`

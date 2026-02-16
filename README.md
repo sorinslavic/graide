@@ -35,7 +35,7 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 
 ## Status
 
-**Current Phase**: Foundation Development (Milestone 0 ✅ Complete)
+**Current Phase**: Milestone 1 - Auth + Google APIs (Phase 1/5 Complete ✅)
 
 - ✅ **Milestone 0**: Project scaffold complete (React + Vite + TypeScript)
   - Complete type system (sheets, grading, drive)
@@ -43,11 +43,17 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
   - Routing with 7 page placeholders
   - Tailwind CSS + shadcn/ui components
   - 917 lines of TypeScript code, builds successfully
-- 🚧 **Next**: Milestone 1 - Auth + Google APIs implementation
-  - Google OAuth login
-  - Google Sheets service (CRUD for all 7 sheets)
-  - Google Drive service (file operations)
-  - Class & Student management UI
+- 🚧 **Milestone 1**: Auth + Google APIs implementation (In Progress)
+  - ✅ **Phase 1**: Google OAuth authentication (COMPLETE)
+    - Google OAuth login with @react-oauth/google
+    - Token storage in localStorage with JWT decoding
+    - Protected routes with ProtectedRoute component
+    - User profile display with Header component
+    - Full login/logout flow working
+  - ⏳ **Phase 2**: Google Sheets service (CRUD for all 7 sheets)
+  - ⏳ **Phase 3**: Google Drive service (file operations)
+  - ⏳ **Phase 4**: First-time setup wizard
+  - ⏳ **Phase 5**: Class & Student management UI
 
 ## Getting Started
 
@@ -135,28 +141,53 @@ Opens at: **http://localhost:4173**
 - Tailwind CSS styling
 - TypeScript compilation
 - Production builds
+- **Google OAuth authentication** (Phase 1 Complete)
+- Protected routes and user session management
+- User profile display with logout
 
 ❌ **What's Not Yet Implemented:**
-- Google OAuth login (Milestone 1)
-- Data persistence to Google Sheets (Milestone 1)
-- Photo upload to Drive (Milestone 2)
+- Data persistence to Google Sheets (Phase 2)
+- Photo upload to Drive (Phase 3)
+- First-time setup wizard (Phase 4)
+- Class & Student management (Phase 5)
 - AI grading (Milestone 3)
 
 See [SCAFFOLD.md](./SCAFFOLD.md) for complete details on what's built.
 
-### Optional: Configure Environment Variables
+### Configure Environment Variables (Required for OAuth)
 
-For future milestones that require Google APIs:
+To use the Google OAuth login (Phase 1), you need to set up Google Cloud credentials:
 
+**Step 1: Create `.env` file**
 ```bash
-cp .env.example .env
+touch .env
 ```
 
-Edit `.env` and add:
-- Google OAuth client ID/secret (from [Google Cloud Console](https://console.cloud.google.com))
-- Gemini API key (free from [AI Studio](https://aistudio.google.com/))
+**Step 2: Get Google OAuth Credentials**
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Create a new project (e.g., "grAIde")
+3. Enable APIs: Google Sheets API, Google Drive API
+4. Go to "APIs & Services" → "Credentials"
+5. Create OAuth 2.0 Client ID (Web application)
+6. Add authorized JavaScript origins: `http://localhost:5173`
+7. Add authorized redirect URIs: `http://localhost:5173`
+8. Copy the Client ID and Client Secret
 
-**Note:** You don't need these yet - the app runs without them for now.
+**Step 3: Edit `.env` file**
+```env
+VITE_GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_SECRET=your_client_secret_here
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_APP_URL=http://localhost:5173
+```
+
+**Step 4: Restart dev server**
+```bash
+# Stop the current server (Ctrl+C)
+npm run dev
+```
+
+**Note:** `.env` is in `.gitignore` - never commit API credentials to git.
 
 ## Documentation
 
