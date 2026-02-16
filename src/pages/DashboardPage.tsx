@@ -46,16 +46,12 @@ export default function DashboardPage() {
     });
     setFolderId(newFolderId);
     setShowSetup(false);
-    toast.success(t('workspace_setup.success', { defaultValue: 'Workspace created successfully!' }));
+    toast.success(t('setup:workspace_setup.success'));
   };
 
   const handleSetupError = (error: string) => {
     console.error('❌ Workspace setup error:', error);
-    toast.error(
-      t('workspace_setup.error', {
-        defaultValue: 'Failed to create workspace. Please try again.',
-      })
-    );
+    toast.error(t('setup:workspace_setup.error'));
   };
 
   return (

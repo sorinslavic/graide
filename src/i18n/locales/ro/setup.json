@@ -38,5 +38,27 @@
     "creating_spreadsheet": "Creez tabelul graide-data în folderul tău...",
     "setting_up": "Configurez spațiul tău de lucru...",
     "complete": "Spațiu de lucru configurat!"
+  },
+  "workspace_setup": {
+    "title": "Configurează Spațiul de Lucru",
+    "description": "Pentru a începe, grAIde are nevoie de acces la un folder Google Drive unde va stoca datele tale.",
+    "will_create": "grAIde va crea:",
+    "spreadsheet_name": "Tabelul graide-data",
+    "spreadsheet_desc": "Baza de date pentru clase, elevi, teste și note",
+    "folder_name": "Folderul organized/",
+    "folder_desc": "Poze organizate automat pe an/clasă/test",
+    "folder_url_label": "URL-ul Folderului Google Drive",
+    "folder_url_help": "Creează un folder în Google Drive, dă click pe Distribuie, și lipește linkul aici",
+    "confirm_button": "Creează Spațiul de Lucru",
+    "initializing_title": "Configurez spațiul tău de lucru...",
+    "creating_spreadsheet": "Creez tabelul graide-data...",
+    "creating_folder": "Creez folderul organized/...",
+    "complete_title": "Spațiul de Lucru Este Gata!",
+    "spreadsheet_created": "Tabelul graide-data a fost creat",
+    "folder_created": "Folderul organized/ a fost creat",
+    "error_no_url": "Te rog introdu URL-ul folderului Google Drive",
+    "error_invalid_url": "URL-ul folderului Google Drive este invalid. Te rog verifică și încearcă din nou.",
+    "success": "Spațiul de lucru a fost creat cu succes!",
+    "error": "Nu am putut crea spațiul de lucru. Te rog încearcă din nou."
   }
 }

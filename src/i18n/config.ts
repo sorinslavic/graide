@@ -41,7 +41,8 @@ i18n
   // Initialize i18next
   .init({
     resources,
-    fallbackLng: 'en',
+    lng: 'ro', // Default to Romanian
+    fallbackLng: 'ro', // Fallback to Romanian if translation missing
     defaultNS: 'common',
 
     // Language detection order

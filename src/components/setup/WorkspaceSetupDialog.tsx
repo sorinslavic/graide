@@ -53,14 +53,14 @@ export default function WorkspaceSetupDialog({
 
     // Validate input
     if (!folderUrl.trim()) {
-      setError('Please enter a Google Drive folder URL');
+      setError(t('workspace_setup.error_no_url'));
       return;
     }
 
     // Extract folder ID
     const extractedId = localDriveService.extractFolderIdFromShareLink(folderUrl);
     if (!extractedId) {
-      setError('Invalid Google Drive folder URL. Please check and try again.');
+      setError(t('workspace_setup.error_invalid_url'));
       return;
     }
 
@@ -100,22 +100,17 @@ export default function WorkspaceSetupDialog({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                🚀 {t('workspace_setup.title', { defaultValue: 'Set Up Your Workspace' })}
+                🚀 {t('workspace_setup.title')}
               </DialogTitle>
               <DialogDescription className="pt-4 space-y-4">
                 <p className="text-sm text-gray-700">
-                  {t('workspace_setup.description', {
-                    defaultValue:
-                      'To get started, grAIde needs access to a Google Drive folder where it will store your data.',
-                  })}
+                  {t('workspace_setup.description')}
                 </p>
 
                 {/* What will be created */}
                 <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm font-medium text-gray-900 mb-2">
-                    {t('workspace_setup.will_create', {
-                      defaultValue: 'grAIde will create:',
-                    })}
+                    {t('workspace_setup.will_create')}
                   </p>
 
                   <div className="space-y-2">
@@ -123,10 +118,10 @@ export default function WorkspaceSetupDialog({
                       <Sheet className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          graide-data Spreadsheet
+                          {t('workspace_setup.spreadsheet_name')}
                         </p>
                         <p className="text-xs text-gray-600">
-                          Database for classes, students, tests, and grades
+                          {t('workspace_setup.spreadsheet_desc')}
                         </p>
                       </div>
                     </div>
@@ -135,10 +130,10 @@ export default function WorkspaceSetupDialog({
                       <FolderOpen className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          organized/ Folder
+                          {t('workspace_setup.folder_name')}
                         </p>
                         <p className="text-xs text-gray-600">
-                          Auto-organized photos by year/class/test
+                          {t('workspace_setup.folder_desc')}
                         </p>
                       </div>
                     </div>
@@ -148,9 +143,7 @@ export default function WorkspaceSetupDialog({
                 {/* Folder URL Input */}
                 <div className="space-y-2">
                   <Label htmlFor="folder-url" className="text-sm font-medium">
-                    {t('workspace_setup.folder_url_label', {
-                      defaultValue: 'Google Drive Folder URL',
-                    })}
+                    {t('workspace_setup.folder_url_label')}
                   </Label>
                   <Input
                     id="folder-url"
@@ -164,10 +157,7 @@ export default function WorkspaceSetupDialog({
                     className={error ? 'border-red-500' : ''}
                   />
                   <p className="text-xs text-gray-500">
-                    {t('workspace_setup.folder_url_help', {
-                      defaultValue:
-                        'Create a folder in Google Drive, click Share, and paste the link here',
-                    })}
+                    {t('workspace_setup.folder_url_help')}
                   </p>
 
                   {error && (
@@ -185,9 +175,7 @@ export default function WorkspaceSetupDialog({
                 disabled={isInitializing || !folderUrl.trim()}
                 className="w-full"
               >
-                {t('workspace_setup.confirm_button', {
-                  defaultValue: 'Create Workspace',
-                })}
+                {t('workspace_setup.confirm_button')}
               </Button>
             </DialogFooter>
           </>
@@ -198,26 +186,20 @@ export default function WorkspaceSetupDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Loader2 className="h-5 w-5 animate-spin" />
-                {t('workspace_setup.initializing_title', {
-                  defaultValue: 'Setting up your workspace...',
-                })}
+                {t('workspace_setup.initializing_title')}
               </DialogTitle>
               <DialogDescription className="pt-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-700">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                     <span className="text-sm">
-                      {t('workspace_setup.creating_spreadsheet', {
-                        defaultValue: 'Creating graide-data spreadsheet...',
-                      })}
+                      {t('workspace_setup.creating_spreadsheet')}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Loader2 className="h-4 w-4 animate-spin text-green-600" />
                     <span className="text-sm">
-                      {t('workspace_setup.creating_folder', {
-                        defaultValue: 'Creating organized/ folder...',
-                      })}
+                      {t('workspace_setup.creating_folder')}
                     </span>
                   </div>
                 </div>
@@ -231,26 +213,20 @@ export default function WorkspaceSetupDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-green-600">
                 <CheckCircle2 className="h-5 w-5" />
-                {t('workspace_setup.complete_title', {
-                  defaultValue: 'Workspace Ready!',
-                })}
+                {t('workspace_setup.complete_title')}
               </DialogTitle>
               <DialogDescription className="pt-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-gray-700">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
                     <span className="text-sm">
-                      {t('workspace_setup.spreadsheet_created', {
-                        defaultValue: 'graide-data spreadsheet created',
-                      })}
+                      {t('workspace_setup.spreadsheet_created')}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
                     <span className="text-sm">
-                      {t('workspace_setup.folder_created', {
-                        defaultValue: 'organized/ folder created',
-                      })}
+                      {t('workspace_setup.folder_created')}
                     </span>
                   </div>
                 </div>

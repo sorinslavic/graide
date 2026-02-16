@@ -38,5 +38,27 @@
     "creating_spreadsheet": "Creating graide-data spreadsheet in your folder...",
     "setting_up": "Setting up your workspace...",
     "complete": "Workspace setup complete!"
+  },
+  "workspace_setup": {
+    "title": "Set Up Your Workspace",
+    "description": "To get started, grAIde needs access to a Google Drive folder where it will store your data.",
+    "will_create": "grAIde will create:",
+    "spreadsheet_name": "graide-data Spreadsheet",
+    "spreadsheet_desc": "Database for classes, students, tests, and grades",
+    "folder_name": "organized/ Folder",
+    "folder_desc": "Auto-organized photos by year/class/test",
+    "folder_url_label": "Google Drive Folder URL",
+    "folder_url_help": "Create a folder in Google Drive, click Share, and paste the link here",
+    "confirm_button": "Create Workspace",
+    "initializing_title": "Setting up your workspace...",
+    "creating_spreadsheet": "Creating graide-data spreadsheet...",
+    "creating_folder": "Creating organized/ folder...",
+    "complete_title": "Workspace Ready!",
+    "spreadsheet_created": "graide-data spreadsheet created",
+    "folder_created": "organized/ folder created",
+    "error_no_url": "Please enter a Google Drive folder URL",
+    "error_invalid_url": "Invalid Google Drive folder URL. Please check and try again.",
+    "success": "Workspace created successfully!",
+    "error": "Failed to create workspace. Please try again."
   }
 }
