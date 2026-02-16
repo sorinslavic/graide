@@ -17,13 +17,24 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 
 **The solution:** Snap photos, let AI grade, review and approve. Cut grading time by 60-80% while gaining insights that make teaching more effective.
 
-### Key Features (Planned)
-- **Photo Inbox**: Dump test photos from phone to Drive, sort them in the app
-- **AI Grading**: Gemini Vision reads handwriting, evaluates answers, assigns points
-- **Teacher Review**: Side-by-side view of original photo vs AI evaluation, easy overrides
-- **Mistake Tracking**: Every error classified and stored — no more mental gymnastics
-- **Pattern Detection**: Spot class-wide misconceptions and per-student trends
-- **Google Sheets**: All data in a spreadsheet the teacher can edit directly
+### Key Features
+
+**✅ Implemented:**
+- **Google OAuth Authentication**: Secure login with Drive & Sheets permissions
+- **Workspace Setup**: Automated workspace initialization with Drive folder + spreadsheet
+- **Google Sheets Database**: 8 sheets (README, Classes, Students, Tests, Results, Mistakes, Rubrics, Config)
+- **Class Management**: Full CRUD for classes with school year tracking
+- **Student Management**: Full CRUD for students linked to classes
+- **Multi-language Support**: Romanian (default) and English with persistent language selection
+- **Account Management**: View all configuration, reset workspace, logout
+- **Auto-Documentation**: README sheet in spreadsheet explains data structure
+
+**🚧 In Progress:**
+- **Photo Inbox**: Bulk photo upload and student assignment
+- **AI Grading**: Gemini Vision integration for handwriting recognition
+- **Teacher Review**: Side-by-side photo vs AI evaluation interface
+- **Mistake Tracking**: Automated error classification and pattern detection
+- **Analytics Dashboard**: Class-wide trends and student progress tracking
 
 ### Tech Stack
 - **Frontend**: React + Vite + shadcn/ui + Tailwind CSS
@@ -35,25 +46,44 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 
 ## Status
 
-**Current Phase**: Milestone 1 - Auth + Google APIs (Phase 1/5 Complete ✅)
+**Current Phase**: Milestone 2 Complete - Class & Student Management ✅
 
-- ✅ **Milestone 0**: Project scaffold complete (React + Vite + TypeScript)
-  - Complete type system (sheets, grading, drive)
-  - Service layer interfaces (Auth, Sheets, Drive, AI)
-  - Routing with 7 page placeholders
-  - Tailwind CSS + shadcn/ui components
-  - 917 lines of TypeScript code, builds successfully
-- 🚧 **Milestone 1**: Auth + Google APIs implementation (In Progress)
-  - ✅ **Phase 1**: Google OAuth authentication (COMPLETE)
-    - Google OAuth login with @react-oauth/google
-    - Token storage in localStorage with JWT decoding
-    - Protected routes with ProtectedRoute component
-    - User profile display with Header component
-    - Full login/logout flow working
-  - ⏳ **Phase 2**: Google Sheets service (CRUD for all 7 sheets)
-  - ⏳ **Phase 3**: Google Drive service (file operations)
-  - ⏳ **Phase 4**: First-time setup wizard
-  - ⏳ **Phase 5**: Class & Student management UI
+**Completed Milestones:**
+- ✅ **Milestone 0**: Project Scaffold
+  - React + Vite + TypeScript + shadcn/ui
+  - Service layer architecture with interfaces
+  - 7-page routing structure
+
+- ✅ **Milestone 1**: Auth + Google APIs
+  - Google OAuth 2.0 with Drive & Sheets scopes
+  - Direct API calls from browser (no backend needed)
+  - Google Sheets service (full CRUD for 8 sheets)
+  - Google Drive service (folder operations)
+  - Workspace initialization (auto-creates spreadsheet + organized folder)
+
+- ✅ **Milestone 2**: Class & Student Management
+  - Full CRUD for classes (name, grade level, school year)
+  - Full CRUD for students (name, student number, class assignment)
+  - Multi-language UI (Romanian/English)
+  - Account dropdown with workspace configuration
+  - Reset workspace functionality
+
+**In Progress:**
+- 🚧 **Milestone 3**: Photo Inbox & Assignment
+- ⏳ **Milestone 4**: AI Grading Engine (Gemini integration)
+- ⏳ **Milestone 5**: Teacher Review Interface
+- ⏳ **Milestone 6**: Analytics Dashboard
+
+## Recent Updates
+
+### February 2026
+- **📚 README Sheet**: Auto-generated documentation in every graide-data spreadsheet explaining data structure, relationships, and editing guidelines
+- **🌍 Internationalization**: Full Romanian/English support with Romanian as default language
+- **⚙️ Enhanced Account Menu**: View all workspace configuration (folder, spreadsheet, organized folder IDs) with one-click access to Drive/Sheets
+- **🔄 Reset Configuration**: Reset workspace setup without losing authentication
+- **🚀 Unified Setup Flow**: Single dialog handles both Drive URL configuration and workspace initialization
+- **✨ Auto-Initialization**: Automatically detects missing spreadsheet and prompts for setup
+- **🎨 Branding Update**: Navy + coral color scheme with new logo
 
 ## Getting Started
 
