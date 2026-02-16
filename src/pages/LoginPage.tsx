@@ -1,60 +1,56 @@
 /**
- * Login page - Google OAuth authentication
+ * Login page - Google OAuth authentication with proper scopes
  */
 
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
-import { jwtDecode } from 'jwt-decode';
-import { Sheet as SheetsIcon, HardDrive, User, Shield } from 'lucide-react';
+import { getOAuthClient } from '@/services/auth/google-oauth-client';
+import { Sheet as SheetsIcon, HardDrive, User, Shield, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import Logo from '@/components/common/Logo';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
-
-interface GoogleJWTPayload {
-  sub: string;
-  email: string;
-  name: string;
-  picture?: string;
-}
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { t } = useTranslation('auth');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSuccess = async (credentialResponse: CredentialResponse) => {
+  const handleGoogleLogin = async () => {
     try {
-      if (!credentialResponse.credential) {
-        throw new Error('No credential received');
-      }
+      setIsLoading(true);
+      console.log('🔐 Initiating OAuth flow...');
 
-      // Decode the JWT to get user info
-      const decoded = jwtDecode<GoogleJWTPayload>(credentialResponse.credential);
+      const oauthClient = getOAuthClient();
 
-      const userInfo = {
-        id: decoded.sub,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture,
-      };
+      // Request OAuth token with proper scopes
+      const tokenResponse = await oauthClient.requestToken();
+      console.log('✅ Received access token with scopes:', tokenResponse.scope);
 
-      // Store auth credentials
-      await login(credentialResponse.credential, userInfo);
+      // Get user info using the access token
+      const userInfo = await oauthClient.getUserInfo(tokenResponse.access_token);
+      console.log('✅ User info retrieved:', userInfo.email);
 
-      console.log('✅ Login successful:', userInfo.email);
+      // Store credentials
+      await login(tokenResponse.access_token, {
+        id: userInfo.id,
+        email: userInfo.email,
+        name: userInfo.name,
+        picture: userInfo.picture,
+      });
+
+      console.log('✅ Login successful');
 
       // Redirect to dashboard
       navigate('/dashboard');
     } catch (error) {
       console.error('❌ Login failed:', error);
-      alert('Login failed. Please try again.');
+      alert('Login failed. Please try again and grant all required permissions.');
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const handleError = () => {
-    console.error('❌ Google OAuth error');
-    alert('Login failed. Please try again.');
   };
 
   return (
@@ -75,15 +71,31 @@ export default function LoginPage() {
 
           {/* Google Login Button */}
           <div className="mt-8 flex justify-center">
-            <GoogleLogin
-              onSuccess={handleSuccess}
-              onError={handleError}
-              useOneTap
-              theme="outline"
-              size="large"
-              text="signin_with"
-              shape="rectangular"
-            />
+            <Button
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+              size="lg"
+              className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm flex items-center gap-3 px-6"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="none" fillRule="evenodd">
+                      <path d="M17.6 9.2l-.1-1.8H9v3.4h4.8C13.6 12 13 13 12 13.6v2.2h3a8.8 8.8 0 0 0 2.6-6.6z" fill="#4285F4"/>
+                      <path d="M9 18c2.4 0 4.5-.8 6-2.2l-3-2.2a5.4 5.4 0 0 1-8-2.9H1V13a9 9 0 0 0 8 5z" fill="#34A853"/>
+                      <path d="M4 10.7a5.4 5.4 0 0 1 0-3.4V5H1a9 9 0 0 0 0 8l3-2.3z" fill="#FBBC05"/>
+                      <path d="M9 3.6c1.3 0 2.5.4 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.4a5.4 5.4 0 0 1 5-3.7z" fill="#EA4335"/>
+                    </g>
+                  </svg>
+                  Sign in with Google
+                </>
+              )}
+            </Button>
           </div>
 
           {/* Permissions Explanation */}

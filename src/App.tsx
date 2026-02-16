@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './hooks/use-auth';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
@@ -22,20 +21,10 @@ const queryClient = new QueryClient({
   },
 });
 
-// Get Google Client ID from environment
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-if (!GOOGLE_CLIENT_ID) {
-  throw new Error(
-    'Missing VITE_GOOGLE_CLIENT_ID environment variable. Please add it to your .env file.'
-  );
-}
-
 function App() {
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<LoginPage />} />
@@ -93,7 +82,6 @@ function App() {
           <Toaster />
         </QueryClientProvider>
       </AuthProvider>
-    </GoogleOAuthProvider>
   );
 }
 

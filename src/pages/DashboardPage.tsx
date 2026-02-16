@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Header from '@/components/layout/Header';
 import SetupWizard from '@/components/setup/SetupWizard';
+import GoogleAPITester from '@/components/dev/GoogleAPITester';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function DashboardPage() {
@@ -151,6 +152,11 @@ export default function DashboardPage() {
             <li>✅ {t('phase_complete.features.profile')}</li>
             <li>✅ {t('phase_complete.features.logout')}</li>
           </ul>
+        </div>
+
+        {/* Google API Tester (Dev Tool) */}
+        <div className="mt-8">
+          <GoogleAPITester />
         </div>
       </main>
     </div>
