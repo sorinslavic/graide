@@ -1,0 +1,42 @@
+{
+  "wizard": {
+    "title": "Welcome! Let's set up grAIde",
+    "subtitle": "This will only take 2 minutes",
+    "skip_link": "I'll do this later"
+  },
+  "folder_setup": {
+    "title": "Step 1: Create a Google Drive folder",
+    "intro": "grAIde needs a shared folder where you'll upload test photos from your phone.",
+    "instructions": {
+      "title": "Here's how to create it:",
+      "step1": "Open Google Drive on your computer",
+      "step2": "Create a new folder (e.g., \"grAIde Photos\")",
+      "step3": "Right-click the folder → Share → Copy link",
+      "step4": "Paste the link below"
+    },
+    "input_label": "Google Drive folder share link",
+    "input_placeholder": "https://drive.google.com/drive/folders/...",
+    "help_text": "The link should look like: https://drive.google.com/drive/folders/1abc...xyz",
+    "validation": {
+      "required": "Please provide a folder link",
+      "invalid": "This doesn't look like a valid Google Drive folder link"
+    }
+  },
+  "confirmation": {
+    "title": "All set!",
+    "message": "grAIde is ready to use. You can now:",
+    "features": {
+      "upload": "Upload test photos to your Drive folder",
+      "organize": "Sort them in the Photo Inbox",
+      "grade": "Let AI grade them automatically",
+      "review": "Review and override AI suggestions"
+    },
+    "cta": "Let's get started!"
+  },
+  "status": {
+    "checking_folder": "Checking folder access...",
+    "creating_spreadsheet": "Creating graide-data spreadsheet...",
+    "setting_up": "Setting up your workspace...",
+    "complete": "Setup complete!"
+  }
+}

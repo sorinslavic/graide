@@ -1,0 +1,32 @@
+{
+  "app_name": "grAIde",
+  "app_tagline": "Asistent AI pentru Corectare",
+  "buttons": {
+    "logout": "Deconectare",
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "continue": "Continuă",
+    "back": "Înapoi",
+    "close": "Închide",
+    "next": "Următorul",
+    "finish": "Finalizează",
+    "skip": "Omite"
+  },
+  "navigation": {
+    "dashboard": "Panou",
+    "inbox": "Poze Teste",
+    "classes": "Clase",
+    "analytics": "Analize",
+    "settings": "Setări"
+  },
+  "status": {
+    "loading": "Se încarcă...",
+    "saving": "Se salvează...",
+    "success": "Succes!",
+    "error": "Eroare"
+  },
+  "language": {
+    "english": "English",
+    "romanian": "Română"
+  }
+}

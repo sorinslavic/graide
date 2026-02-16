@@ -1,0 +1,38 @@
+{
+  "welcome": {
+    "greeting": "Bine ai revenit, {{name}}!",
+    "subtitle": "Iată ce poți face în grAIde"
+  },
+  "cards": {
+    "inbox": {
+      "title": "Poze Teste",
+      "description": "Sortează și asignează pozele testelor de pe telefon",
+      "status": "În curând în Milestone 2"
+    },
+    "classes": {
+      "title": "Clase",
+      "description": "Gestionează clase și elevi",
+      "status": "Disponibil acum! (Milestone 1)"
+    },
+    "analytics": {
+      "title": "Analize",
+      "description": "Vezi tendințe și statistici",
+      "status": "În curând în Milestone 5"
+    }
+  },
+  "phase_complete": {
+    "title": "🎉 Faza 1 Completă: Autentificarea Funcționează!",
+    "message": "Acum ești conectată cu Google OAuth. Încearcă să navighezi la pagina Clase pentru a-ți gestiona clasele și elevii (în curând în Faza 5).",
+    "features": {
+      "oauth": "Autentificare Google OAuth",
+      "routes": "Rute protejate",
+      "profile": "Afișare profil utilizator",
+      "logout": "Funcționalitate deconectare"
+    }
+  },
+  "setup_prompt": {
+    "title": "⚠️ Configurare Necesară",
+    "message": "Înainte să începi corectarea, te rog completează configurarea inițială.",
+    "cta": "Completează Configurarea"
+  }
+}

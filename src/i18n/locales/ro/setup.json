@@ -1,0 +1,42 @@
+{
+  "wizard": {
+    "title": "Bine ai venit! Hai să configurăm grAIde",
+    "subtitle": "Durează doar 2 minute",
+    "skip_link": "O fac mai târziu"
+  },
+  "folder_setup": {
+    "title": "Pasul 1: Creează un folder în Google Drive",
+    "intro": "grAIde are nevoie de un folder unde vei încărca pozele testelor de pe telefon.",
+    "instructions": {
+      "title": "Iată cum îl creezi:",
+      "step1": "Deschide Google Drive pe computer",
+      "step2": "Creează un folder nou (de ex., \"Poze grAIde\")",
+      "step3": "Click dreapta pe folder → Distribuie → Copiază linkul",
+      "step4": "Lipește linkul mai jos"
+    },
+    "input_label": "Link de distribuire folder Google Drive",
+    "input_placeholder": "https://drive.google.com/drive/folders/...",
+    "help_text": "Linkul ar trebui să arate așa: https://drive.google.com/drive/folders/1abc...xyz",
+    "validation": {
+      "required": "Te rog furnizează un link de folder",
+      "invalid": "Acesta nu pare să fie un link valid de folder Google Drive"
+    }
+  },
+  "confirmation": {
+    "title": "Gata!",
+    "message": "grAIde e pregătit de utilizare. Acum poți:",
+    "features": {
+      "upload": "Încarcă poze cu teste în folderul tău Drive",
+      "organize": "Sortează-le în Inbox-ul de Poze",
+      "grade": "Lasă AI-ul să le corecteze automat",
+      "review": "Revizuiește și modifică sugestiile AI"
+    },
+    "cta": "Hai să începem!"
+  },
+  "status": {
+    "checking_folder": "Verific accesul la folder...",
+    "creating_spreadsheet": "Creez tabelul graide-data...",
+    "setting_up": "Configurez spațiul tău de lucru...",
+    "complete": "Configurare completă!"
+  }
+}

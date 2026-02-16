@@ -1,0 +1,32 @@
+{
+  "app_name": "grAIde",
+  "app_tagline": "AI-Powered Grading Assistant",
+  "buttons": {
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "save": "Save",
+    "continue": "Continue",
+    "back": "Back",
+    "close": "Close",
+    "next": "Next",
+    "finish": "Finish",
+    "skip": "Skip"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "inbox": "Photo Inbox",
+    "classes": "Classes",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "success": "Success!",
+    "error": "Error"
+  },
+  "language": {
+    "english": "English",
+    "romanian": "Română"
+  }
+}

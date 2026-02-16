@@ -1,16 +1,19 @@
 /**
  * Header Component
- * Displays user info and logout button
+ * Displays user info, language switcher, and logout button
  */
 
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const handleLogout = async () => {
     await logout();
@@ -41,6 +44,7 @@ export default function Header() {
                 <p className="text-gray-500">{user.email}</p>
               </div>
             </div>
+            <LanguageSwitcher />
             <Button
               variant="outline"
               size="sm"
@@ -48,7 +52,7 @@ export default function Header() {
               className="flex items-center space-x-2"
             >
               <LogOut className="h-4 w-4" />
-              <span>Logout</span>
+              <span>{t('buttons.logout')}</span>
             </Button>
           </div>
         )}

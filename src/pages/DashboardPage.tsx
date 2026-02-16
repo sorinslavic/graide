@@ -2,39 +2,106 @@
  * Dashboard page - Overview of classes, tests, and recent activity
  */
 
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '@/components/layout/Header';
+import SetupWizard from '@/components/setup/SetupWizard';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation('dashboard');
+  const [folderId, setFolderId] = useState<string | null>(null);
+  const [showSetup, setShowSetup] = useState(false);
+
+  // Check if folder is configured
+  useEffect(() => {
+    const storedFolderId = localStorage.getItem('graide_folder_id');
+    if (storedFolderId) {
+      setFolderId(storedFolderId);
+    } else {
+      setShowSetup(true);
+    }
+  }, []);
+
+  const handleSetupComplete = (newFolderId: string) => {
+    setFolderId(newFolderId);
+    setShowSetup(false);
+  };
+
+  const handleSetupSkip = () => {
+    setShowSetup(false);
+  };
+
+  // Show setup wizard if folder not configured
+  if (showSetup) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <SetupWizard
+            onComplete={handleSetupComplete}
+            onSkip={handleSetupSkip}
+          />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        {/* Setup Prompt (if skipped) */}
+        {!folderId && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
+            <div className="text-yellow-600 text-xl">⚠️</div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-yellow-900">
+                {t('setup_prompt.title')}
+              </h3>
+              <p className="text-sm text-yellow-800 mt-1">
+                {t('setup_prompt.message')}
+              </p>
+              <button
+                onClick={() => setShowSetup(true)}
+                className="mt-2 text-sm font-medium text-yellow-900 underline hover:no-underline"
+              >
+                {t('setup_prompt.cta')}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Welcome */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-900">
-            Welcome back, {user?.name?.split(' ')[0] || 'Teacher'}! 👋
+            {t('welcome.greeting', { name: user?.name?.split(' ')[0] || 'Teacher' })} 👋
           </h2>
           <p className="text-gray-600 mt-1">
-            Here's what you can do in grAIde
+            {t('welcome.subtitle')}
           </p>
         </div>
 
+        {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <button
             onClick={() => navigate('/inbox')}
             className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
           >
             <div className="text-3xl mb-3">📥</div>
-            <h3 className="text-lg font-semibold mb-2">Photo Inbox</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t('cards.inbox.title')}
+            </h3>
             <p className="text-gray-600 text-sm">
-              Sort and assign test photos from your phone
+              {t('cards.inbox.description')}
             </p>
-            <p className="text-xs text-gray-500 mt-2">Coming in Milestone 2</p>
+            <p className="text-xs text-gray-500 mt-2">
+              {t('cards.inbox.status')}
+            </p>
           </button>
 
           <button
@@ -42,12 +109,14 @@ export default function DashboardPage() {
             className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
           >
             <div className="text-3xl mb-3">👥</div>
-            <h3 className="text-lg font-semibold mb-2">Classes</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t('cards.classes.title')}
+            </h3>
             <p className="text-gray-600 text-sm">
-              Manage classes and students
+              {t('cards.classes.description')}
             </p>
             <p className="text-xs text-blue-600 mt-2 font-medium">
-              ✅ Available now! (Milestone 1)
+              ✅ {t('cards.classes.status')}
             </p>
           </button>
 
@@ -56,27 +125,31 @@ export default function DashboardPage() {
             className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
           >
             <div className="text-3xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold mb-2">Analytics</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t('cards.analytics.title')}
+            </h3>
             <p className="text-gray-600 text-sm">
-              View patterns and insights
+              {t('cards.analytics.description')}
             </p>
-            <p className="text-xs text-gray-500 mt-2">Coming in Milestone 5</p>
+            <p className="text-xs text-gray-500 mt-2">
+              {t('cards.analytics.status')}
+            </p>
           </button>
         </div>
 
+        {/* Phase Complete Banner */}
         <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
-            🎉 Phase 1 Complete: Authentication Working!
+            {t('phase_complete.title')}
           </h3>
           <p className="text-blue-800 text-sm">
-            You're now logged in with Google OAuth. Try navigating to the
-            Classes page to manage your classes and students (coming in Phase 5).
+            {t('phase_complete.message')}
           </p>
           <ul className="mt-3 space-y-1 text-sm text-blue-700">
-            <li>✅ Google OAuth login</li>
-            <li>✅ Protected routes</li>
-            <li>✅ User profile display</li>
-            <li>✅ Logout functionality</li>
+            <li>✅ {t('phase_complete.features.oauth')}</li>
+            <li>✅ {t('phase_complete.features.routes')}</li>
+            <li>✅ {t('phase_complete.features.profile')}</li>
+            <li>✅ {t('phase_complete.features.logout')}</li>
           </ul>
         </div>
       </main>

@@ -1,0 +1,38 @@
+{
+  "welcome": {
+    "greeting": "Welcome back, {{name}}!",
+    "subtitle": "Here's what you can do in grAIde"
+  },
+  "cards": {
+    "inbox": {
+      "title": "Photo Inbox",
+      "description": "Sort and assign test photos from your phone",
+      "status": "Coming in Milestone 2"
+    },
+    "classes": {
+      "title": "Classes",
+      "description": "Manage classes and students",
+      "status": "Available now! (Milestone 1)"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "description": "View patterns and insights",
+      "status": "Coming in Milestone 5"
+    }
+  },
+  "phase_complete": {
+    "title": "🎉 Phase 1 Complete: Authentication Working!",
+    "message": "You're now logged in with Google OAuth. Try navigating to the Classes page to manage your classes and students (coming in Phase 5).",
+    "features": {
+      "oauth": "Google OAuth login",
+      "routes": "Protected routes",
+      "profile": "User profile display",
+      "logout": "Logout functionality"
+    }
+  },
+  "setup_prompt": {
+    "title": "⚠️ Setup Required",
+    "message": "Before you can start grading, please complete the initial setup.",
+    "cta": "Complete Setup"
+  }
+}
