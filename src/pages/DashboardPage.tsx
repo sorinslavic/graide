@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { Inbox, Users, BarChart3, Sparkles } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import WorkspaceSetupDialog from '@/components/setup/WorkspaceSetupDialog';
 import GoogleAPITester from '@/components/dev/GoogleAPITester';
@@ -81,69 +82,138 @@ export default function DashboardPage() {
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Photo Inbox Card */}
           <button
             onClick={() => navigate('/inbox')}
-            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
+            className="group relative p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-left overflow-hidden transform hover:-translate-y-1"
           >
-            <div className="text-3xl mb-3">📥</div>
-            <h3 className="text-lg font-semibold mb-2">
-              {t('cards.inbox.title')}
-            </h3>
-            <p className="text-gray-600 text-sm">
-              {t('cards.inbox.description')}
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              {t('cards.inbox.status')}
-            </p>
+            {/* Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Inbox className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-white">
+                {t('cards.inbox.title')}
+              </h3>
+              <p className="text-white/90 text-sm mb-3">
+                {t('cards.inbox.description')}
+              </p>
+              <p className="text-xs text-white/70 font-medium">
+                {t('cards.inbox.status')}
+              </p>
+            </div>
           </button>
 
+          {/* Classes Card */}
           <button
             onClick={() => navigate('/classes')}
-            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
+            className="group relative p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-left overflow-hidden transform hover:-translate-y-1"
           >
-            <div className="text-3xl mb-3">👥</div>
-            <h3 className="text-lg font-semibold mb-2 text-navy-700">
-              {t('cards.classes.title')}
-            </h3>
-            <p className="text-navy-500 text-sm">
-              {t('cards.classes.description')}
-            </p>
-            <p className="text-xs text-coral-600 mt-2 font-medium">
-              ✅ {t('cards.classes.status')}
-            </p>
+            {/* Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Users className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-white">
+                {t('cards.classes.title')}
+              </h3>
+              <p className="text-white/90 text-sm mb-3">
+                {t('cards.classes.description')}
+              </p>
+              <div className="flex items-center gap-1.5 text-xs text-white font-medium bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full w-fit">
+                <Sparkles className="h-3 w-3" />
+                {t('cards.classes.status')}
+              </div>
+            </div>
           </button>
 
+          {/* Analytics Card */}
           <button
             onClick={() => navigate('/analytics')}
-            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
+            className="group relative p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-left overflow-hidden transform hover:-translate-y-1"
           >
-            <div className="text-3xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold mb-2 text-navy-700">
-              {t('cards.analytics.title')}
-            </h3>
-            <p className="text-navy-500 text-sm">
-              {t('cards.analytics.description')}
-            </p>
-            <p className="text-xs text-navy-400 mt-2">
-              {t('cards.analytics.status')}
-            </p>
+            {/* Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <BarChart3 className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-white">
+                {t('cards.analytics.title')}
+              </h3>
+              <p className="text-white/90 text-sm mb-3">
+                {t('cards.analytics.description')}
+              </p>
+              <p className="text-xs text-white/70 font-medium">
+                {t('cards.analytics.status')}
+              </p>
+            </div>
           </button>
         </div>
 
         {/* Phase Complete Banner */}
-        <div className="mt-8 p-6 bg-navy-50 border border-navy-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-navy-700 mb-2">
-            {t('phase_complete.title')}
-          </h3>
-          <p className="text-navy-600 text-sm">
-            {t('phase_complete.message')}
-          </p>
-          <ul className="mt-3 space-y-1 text-sm text-navy-600">
-            <li>✅ {t('phase_complete.features.oauth')}</li>
-            <li>✅ {t('phase_complete.features.routes')}</li>
-            <li>✅ {t('phase_complete.features.profile')}</li>
-            <li>✅ {t('phase_complete.features.logout')}</li>
-          </ul>
+        <div className="mt-8 relative overflow-hidden rounded-2xl shadow-lg">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-90"></div>
+
+          {/* Animated Sparkles Background */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.1),transparent)] animate-pulse"></div>
+
+          {/* Content */}
+          <div className="relative z-10 p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-6 w-6 text-white animate-pulse" />
+              <h3 className="text-xl font-bold text-white">
+                {t('phase_complete.title')}
+              </h3>
+            </div>
+            <p className="text-white/90 text-sm mb-4">
+              {t('phase_complete.message')}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs text-white font-medium">
+                  {t('phase_complete.features.oauth')}
+                </span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs text-white font-medium">
+                  {t('phase_complete.features.routes')}
+                </span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs text-white font-medium">
+                  {t('phase_complete.features.profile')}
+                </span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs text-white font-medium">
+                  {t('phase_complete.features.logout')}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Google API Tester (Dev Tool - Hidden by default) */}
