@@ -5,8 +5,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
 import SetupWizard from '@/components/setup/SetupWizard';
+import AutoInitDialog from '@/components/setup/AutoInitDialog';
 import GoogleAPITester from '@/components/dev/GoogleAPITester';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -16,24 +18,50 @@ export default function DashboardPage() {
   const { t } = useTranslation('dashboard');
   const [folderId, setFolderId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
+  const [showAutoInit, setShowAutoInit] = useState(false);
+  const [showDevTools, setShowDevTools] = useState(false);
 
-  // Check if folder is configured
+  // Check if folder and spreadsheet are configured
   useEffect(() => {
     const storedFolderId = localStorage.getItem('graide_folder_id');
-    if (storedFolderId) {
-      setFolderId(storedFolderId);
-    } else {
+    const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
+
+    if (!storedFolderId) {
+      // No folder configured - show setup wizard
       setShowSetup(true);
+    } else {
+      setFolderId(storedFolderId);
+
+      if (!spreadsheetId) {
+        // Folder exists but no spreadsheet - auto-initialize
+        setShowAutoInit(true);
+      }
     }
   }, []);
 
   const handleSetupComplete = (newFolderId: string) => {
     setFolderId(newFolderId);
     setShowSetup(false);
+    // After folder setup, check if we need to initialize
+    const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
+    if (!spreadsheetId) {
+      setShowAutoInit(true);
+    }
   };
 
   const handleSetupSkip = () => {
     setShowSetup(false);
+  };
+
+  const handleAutoInitComplete = (spreadsheetId: string, organizedFolderId: string) => {
+    console.log('✅ Workspace initialized:', { spreadsheetId, organizedFolderId });
+    toast.success(t('auto_init.success', { defaultValue: 'Workspace created successfully!' }));
+    setShowAutoInit(false);
+  };
+
+  const handleAutoInitError = (error: string) => {
+    console.error('❌ Auto-init error:', error);
+    toast.error(t('auto_init.error', { defaultValue: 'Failed to create workspace. Please try again.' }));
   };
 
   // Show setup wizard if folder not configured
@@ -54,6 +82,16 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-cream-50">
       <Header />
+
+      {/* Auto-Initialization Dialog */}
+      {showAutoInit && folderId && (
+        <AutoInitDialog
+          open={showAutoInit}
+          folderId={folderId}
+          onComplete={handleAutoInitComplete}
+          onError={handleAutoInitError}
+        />
+      )}
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Setup Prompt (if skipped) */}
@@ -154,10 +192,26 @@ export default function DashboardPage() {
           </ul>
         </div>
 
-        {/* Google API Tester (Dev Tool) */}
-        <div className="mt-8">
-          <GoogleAPITester />
-        </div>
+        {/* Google API Tester (Dev Tool - Hidden by default) */}
+        {showDevTools && (
+          <div className="mt-8">
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Developer Tools - For testing and troubleshooting only
+              </p>
+            </div>
+            <GoogleAPITester />
+          </div>
+        )}
+
+        {/* Dev Tools Toggle (Hidden) */}
+        <button
+          onClick={() => setShowDevTools(!showDevTools)}
+          className="mt-4 text-xs text-gray-400 hover:text-gray-600"
+          title="Toggle dev tools"
+        >
+          {showDevTools ? '🔧 Hide Dev Tools' : '🔧 Show Dev Tools'}
+        </button>
       </main>
     </div>
   );
