@@ -51,24 +51,24 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream-50">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Setup Prompt (if skipped) */}
         {!folderId && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
-            <div className="text-yellow-600 text-xl">⚠️</div>
+          <div className="mb-6 p-4 bg-coral-50 border border-coral-200 rounded-lg flex items-start gap-3">
+            <div className="text-coral-600 text-xl">⚠️</div>
             <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900">
+              <h3 className="font-semibold text-coral-900">
                 {t('setup_prompt.title')}
               </h3>
-              <p className="text-sm text-yellow-800 mt-1">
+              <p className="text-sm text-coral-800 mt-1">
                 {t('setup_prompt.message')}
               </p>
               <button
                 onClick={() => setShowSetup(true)}
-                className="mt-2 text-sm font-medium text-yellow-900 underline hover:no-underline"
+                className="mt-2 text-sm font-medium text-coral-700 underline hover:no-underline"
               >
                 {t('setup_prompt.cta')}
               </button>
@@ -78,10 +78,10 @@ export default function DashboardPage() {
 
         {/* Welcome */}
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-navy-700">
             {t('welcome.greeting', { name: user?.name?.split(' ')[0] || 'Teacher' })} 👋
           </h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-navy-500 mt-1">
             {t('welcome.subtitle')}
           </p>
         </div>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <button
             onClick={() => navigate('/inbox')}
-            className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
+            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
           >
             <div className="text-3xl mb-3">📥</div>
             <h3 className="text-lg font-semibold mb-2">
@@ -106,46 +106,46 @@ export default function DashboardPage() {
 
           <button
             onClick={() => navigate('/classes')}
-            className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
+            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
           >
             <div className="text-3xl mb-3">👥</div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 text-navy-700">
               {t('cards.classes.title')}
             </h3>
-            <p className="text-gray-600 text-sm">
+            <p className="text-navy-500 text-sm">
               {t('cards.classes.description')}
             </p>
-            <p className="text-xs text-blue-600 mt-2 font-medium">
+            <p className="text-xs text-coral-600 mt-2 font-medium">
               ✅ {t('cards.classes.status')}
             </p>
           </button>
 
           <button
             onClick={() => navigate('/analytics')}
-            className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-left"
+            className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all border border-cream-200 hover:border-navy-200 text-left"
           >
             <div className="text-3xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 text-navy-700">
               {t('cards.analytics.title')}
             </h3>
-            <p className="text-gray-600 text-sm">
+            <p className="text-navy-500 text-sm">
               {t('cards.analytics.description')}
             </p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-navy-400 mt-2">
               {t('cards.analytics.status')}
             </p>
           </button>
         </div>
 
         {/* Phase Complete Banner */}
-        <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+        <div className="mt-8 p-6 bg-navy-50 border border-navy-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-navy-700 mb-2">
             {t('phase_complete.title')}
           </h3>
-          <p className="text-blue-800 text-sm">
+          <p className="text-navy-600 text-sm">
             {t('phase_complete.message')}
           </p>
-          <ul className="mt-3 space-y-1 text-sm text-blue-700">
+          <ul className="mt-3 space-y-1 text-sm text-navy-600">
             <li>✅ {t('phase_complete.features.oauth')}</li>
             <li>✅ {t('phase_complete.features.routes')}</li>
             <li>✅ {t('phase_complete.features.profile')}</li>
