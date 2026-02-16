@@ -7,8 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
-import SetupWizard from '@/components/setup/SetupWizard';
-import AutoInitDialog from '@/components/setup/AutoInitDialog';
+import WorkspaceSetupDialog from '@/components/setup/WorkspaceSetupDialog';
 import GoogleAPITester from '@/components/dev/GoogleAPITester';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -18,103 +17,62 @@ export default function DashboardPage() {
   const { t } = useTranslation('dashboard');
   const [folderId, setFolderId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
-  const [showAutoInit, setShowAutoInit] = useState(false);
   const [showDevTools, setShowDevTools] = useState(false);
 
-  // Check if folder and spreadsheet are configured
+  // Check if workspace needs setup (folder OR spreadsheet missing)
   useEffect(() => {
     const storedFolderId = localStorage.getItem('graide_folder_id');
     const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
 
-    if (!storedFolderId) {
-      // No folder configured - show setup wizard
+    if (!storedFolderId || !spreadsheetId) {
+      // Either folder or spreadsheet missing - show unified setup dialog
+      setFolderId(storedFolderId);
       setShowSetup(true);
     } else {
       setFolderId(storedFolderId);
-
-      if (!spreadsheetId) {
-        // Folder exists but no spreadsheet - auto-initialize
-        setShowAutoInit(true);
-      }
+      setShowSetup(false);
     }
   }, []);
 
-  const handleSetupComplete = (newFolderId: string) => {
+  const handleSetupComplete = (
+    newFolderId: string,
+    spreadsheetId: string,
+    organizedFolderId: string
+  ) => {
+    console.log('✅ Workspace setup complete:', {
+      folderId: newFolderId,
+      spreadsheetId,
+      organizedFolderId,
+    });
     setFolderId(newFolderId);
     setShowSetup(false);
-    // After folder setup, check if we need to initialize
-    const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
-    if (!spreadsheetId) {
-      setShowAutoInit(true);
-    }
+    toast.success(t('workspace_setup.success', { defaultValue: 'Workspace created successfully!' }));
   };
 
-  const handleSetupSkip = () => {
-    setShowSetup(false);
-  };
-
-  const handleAutoInitComplete = (spreadsheetId: string, organizedFolderId: string) => {
-    console.log('✅ Workspace initialized:', { spreadsheetId, organizedFolderId });
-    toast.success(t('auto_init.success', { defaultValue: 'Workspace created successfully!' }));
-    setShowAutoInit(false);
-  };
-
-  const handleAutoInitError = (error: string) => {
-    console.error('❌ Auto-init error:', error);
-    toast.error(t('auto_init.error', { defaultValue: 'Failed to create workspace. Please try again.' }));
-  };
-
-  // Show setup wizard if folder not configured
-  if (showSetup) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          <SetupWizard
-            onComplete={handleSetupComplete}
-            onSkip={handleSetupSkip}
-          />
-        </main>
-      </div>
+  const handleSetupError = (error: string) => {
+    console.error('❌ Workspace setup error:', error);
+    toast.error(
+      t('workspace_setup.error', {
+        defaultValue: 'Failed to create workspace. Please try again.',
+      })
     );
-  }
+  };
 
   return (
     <div className="min-h-screen bg-cream-50">
       <Header />
 
-      {/* Auto-Initialization Dialog */}
-      {showAutoInit && folderId && (
-        <AutoInitDialog
-          open={showAutoInit}
-          folderId={folderId}
-          onComplete={handleAutoInitComplete}
-          onError={handleAutoInitError}
+      {/* Unified Workspace Setup Dialog */}
+      {showSetup && (
+        <WorkspaceSetupDialog
+          open={showSetup}
+          initialFolderId={folderId}
+          onComplete={handleSetupComplete}
+          onError={handleSetupError}
         />
       )}
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        {/* Setup Prompt (if skipped) */}
-        {!folderId && (
-          <div className="mb-6 p-4 bg-coral-50 border border-coral-200 rounded-lg flex items-start gap-3">
-            <div className="text-coral-600 text-xl">⚠️</div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-coral-900">
-                {t('setup_prompt.title')}
-              </h3>
-              <p className="text-sm text-coral-800 mt-1">
-                {t('setup_prompt.message')}
-              </p>
-              <button
-                onClick={() => setShowSetup(true)}
-                className="mt-2 text-sm font-medium text-coral-700 underline hover:no-underline"
-              >
-                {t('setup_prompt.cta')}
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Welcome */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-navy-700">
