@@ -44,6 +44,14 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 - **Charts**: Recharts (analytics dashboard)
 - **Deployment**: Local-first (no backend server needed)
 
+### Design Philosophy
+- **Vibrant & Fun**: Colorful gradients, animations, and modern glass-morphism effects
+- **User-Friendly**: Intuitive interface with clear visual hierarchy
+- **Accessible**: High contrast text, proper semantic HTML, ARIA labels
+- **Responsive**: Mobile-first design that works on all screen sizes
+- **Performance**: Smooth 60fps animations with hardware acceleration
+- **Delightful**: Micro-interactions and hover effects make the UI engaging
+
 ## Status
 
 **Current Phase**: Milestone 2 Complete - Class & Student Management ✅
@@ -77,6 +85,14 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ## Recent Updates
 
 ### February 2026
+- **🎨 Vibrant Gradient Design**: Beautiful gradient cards with animations, shimmer effects, and glass-morphism
+  - Purple/pink/rose gradient for Photo Inbox
+  - Blue/cyan/teal gradient for Classes
+  - Orange/amber/yellow gradient for Analytics
+  - Emerald/teal gradient for achievements banner
+  - Smooth hover animations with lift effects
+  - Shimmer animations sliding across cards
+  - Modern, fun, and engaging interface
 - **📚 README Sheet**: Auto-generated documentation in every graide-data spreadsheet explaining data structure, relationships, and editing guidelines
 - **🌍 Internationalization**: Full Romanian/English support with Romanian as default language
 - **⚙️ Enhanced Account Menu**: View all workspace configuration (folder, spreadsheet, organized folder IDs) with one-click access to Drive/Sheets
