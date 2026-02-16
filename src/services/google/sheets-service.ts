@@ -76,3 +76,8 @@ export interface ResultFilters {
   schoolYear?: string;
   status?: Result['status'];
 }
+
+/**
+ * Export implementations
+ */
+export { LocalSheetsService, localSheetsService } from './local-sheets-service';

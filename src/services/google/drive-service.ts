@@ -83,3 +83,8 @@ export interface ListFilesOptions {
   excludeFolders?: string[]; // Folder IDs to exclude
   query?: string; // Additional query parameters
 }
+
+/**
+ * Export implementations
+ */
+export { LocalDriveService, localDriveService } from './local-drive-service';

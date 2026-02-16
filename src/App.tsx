@@ -8,8 +8,10 @@ import DashboardPage from './pages/DashboardPage';
 import PhotoInboxPage from './pages/PhotoInboxPage';
 import GradingPage from './pages/GradingPage';
 import ClassesPage from './pages/ClassesPage';
+import StudentsPage from './pages/StudentsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +64,14 @@ function App() {
                 }
               />
               <Route
+                path="/classes/:classId/students"
+                element={
+                  <ProtectedRoute>
+                    <StudentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/grade/:resultId"
                 element={
                   <ProtectedRoute>
@@ -80,6 +90,7 @@ function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </BrowserRouter>
+          <Toaster />
         </QueryClientProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
