@@ -4,7 +4,7 @@
  */
 
 import { localDriveService } from './google/local-drive-service';
-import { localSheetsService } from './google/local-sheets-service';
+import { localSheetsService, SCHEMA_VERSION } from './google/local-sheets-service';
 
 export interface InitializationStatus {
   isInitialized: boolean;
@@ -138,6 +138,21 @@ export class InitializationService {
     localStorage.removeItem('graide_organized_folder_id');
 
     return this.initialize(folderId);
+  }
+
+  /**
+   * Check if the spreadsheet schema matches the current code version.
+   * If outdated, runs reconciliation to bring it up to date.
+   * Returns whether reconciliation was needed.
+   */
+  async checkAndReconcileSchema(): Promise<{ wasOutdated: boolean; newVersion: number }> {
+    const { upToDate, storedVersion } = await localSheetsService.checkSchemaVersion();
+    if (!upToDate) {
+      console.log(`⚠️ Schema outdated (stored v${storedVersion}, current v${SCHEMA_VERSION}) — reconciling...`);
+      await localSheetsService.reconcileSchema();
+      return { wasOutdated: true, newVersion: SCHEMA_VERSION };
+    }
+    return { wasOutdated: false, newVersion: storedVersion };
   }
 
   /**

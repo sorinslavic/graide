@@ -22,16 +22,23 @@ export default function DashboardPage() {
   const [setupMode, setSetupMode] = useState<'setup' | 'reinitialize'>('setup');
   const [showDevTools, setShowDevTools] = useState(false);
 
-  // Verify workspace on load — checks Drive API so we catch trashed files
+  // Verify workspace on load — checks Drive API so we catch trashed files,
+  // then reconciles the sheet schema if the code version has moved ahead.
   useEffect(() => {
     const verify = async () => {
       const status = await initializationService.verifyInitialization();
       setFolderId(status.folderId ?? null);
+
       if (!status.isInitialized) {
-        // Folder configured but spreadsheet missing/trashed → reinitialize mode
-        // No folder at all → full setup mode
         setSetupMode(status.folderId ? 'reinitialize' : 'setup');
         setShowSetup(true);
+        return;
+      }
+
+      // Workspace is initialized — check if schema needs updating
+      const { wasOutdated } = await initializationService.checkAndReconcileSchema();
+      if (wasOutdated) {
+        toast.success('Workspace updated to the latest version ✨');
       }
     };
     verify();

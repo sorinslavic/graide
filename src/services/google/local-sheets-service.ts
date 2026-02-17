@@ -20,6 +20,16 @@ const SPREADSHEET_NAME = 'graide-data';
 const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
 /**
+ * Current schema version. Bump this whenever sheet structure changes
+ * (new sheets, new columns, updated README content, etc.)
+ *
+ * History:
+ *   1 — initial schema (7 data sheets, no README, no schema_version)
+ *   2 — added README sheet with documentation
+ */
+export const SCHEMA_VERSION = 2;
+
+/**
  * Schema definitions for each sheet (column headers)
  */
 const SHEET_SCHEMAS = {
@@ -1091,6 +1101,139 @@ export class LocalSheetsService implements SheetsService {
     }
 
     await this.deleteRow(SHEET_NAMES.RUBRICS, rowIndex + 2);
+  }
+
+  // ==================== SCHEMA MIGRATION ====================
+
+  /**
+   * Read the schema version stored in the Config sheet.
+   * Returns 0 if the Config sheet has no schema_version entry (pre-v2).
+   */
+  async checkSchemaVersion(): Promise<{ upToDate: boolean; storedVersion: number }> {
+    try {
+      const versionStr = await this.getConfig('schema_version');
+      const storedVersion = versionStr ? parseInt(versionStr, 10) : 0;
+      return { upToDate: storedVersion >= SCHEMA_VERSION, storedVersion };
+    } catch {
+      // If Config sheet doesn't exist yet, treat as version 0
+      return { upToDate: false, storedVersion: 0 };
+    }
+  }
+
+  /**
+   * Fetch the current list of sheet tabs from the spreadsheet.
+   */
+  private async getSheetsList(): Promise<{ title: string; sheetId: number }[]> {
+    const spreadsheetId = await this.getSpreadsheetId();
+    const response = await this.fetchAPI(
+      `${SHEETS_API_BASE}/${spreadsheetId}?fields=sheets.properties(title,sheetId)`
+    );
+    const data = await response.json();
+    return (data.sheets ?? []).map(
+      (s: { properties: { title: string; sheetId: number } }) => ({
+        title: s.properties.title,
+        sheetId: s.properties.sheetId,
+      })
+    );
+  }
+
+  /**
+   * Add a new sheet tab to the spreadsheet. Returns its sheetId.
+   */
+  private async addSheetTab(title: string): Promise<number> {
+    const spreadsheetId = await this.getSpreadsheetId();
+    const token = await this.getAccessToken();
+    const response = await fetch(`${SHEETS_API_BASE}/${spreadsheetId}:batchUpdate`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requests: [{ addSheet: { properties: { title } } }] }),
+    });
+    const data = await response.json();
+    return data.replies[0].addSheet.properties.sheetId as number;
+  }
+
+  /**
+   * Write bold header row to a sheet tab.
+   */
+  private async writeHeaders(sheetId: number, headers: string[]): Promise<void> {
+    const spreadsheetId = await this.getSpreadsheetId();
+    const token = await this.getAccessToken();
+    await fetch(`${SHEETS_API_BASE}/${spreadsheetId}:batchUpdate`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        requests: [{
+          updateCells: {
+            range: { sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: headers.length },
+            rows: [{
+              values: headers.map((h) => ({
+                userEnteredValue: { stringValue: h },
+                userEnteredFormat: { textFormat: { bold: true }, backgroundColor: { red: 0.9, green: 0.9, blue: 0.9 } },
+              })),
+            }],
+            fields: 'userEnteredValue,userEnteredFormat',
+          },
+        }],
+      }),
+    });
+  }
+
+  /**
+   * Refresh the README sheet content using current sheet list.
+   * Creates the README sheet if it doesn't exist.
+   */
+  private async refreshReadme(): Promise<void> {
+    const spreadsheetId = await this.getSpreadsheetId();
+    const token = await this.getAccessToken();
+    let sheets = await this.getSheetsList();
+
+    if (!sheets.find((s) => s.title === 'README')) {
+      await this.addSheetTab('README');
+      sheets = await this.getSheetsList();
+    }
+
+    // Adapt to the format expected by populateReadme
+    const sheetsForReadme = sheets.map((s) => ({
+      properties: { title: s.title, sheetId: s.sheetId },
+    }));
+    await this.populateReadme(spreadsheetId, sheetsForReadme, token);
+  }
+
+  /**
+   * Reconcile the spreadsheet to the current schema version.
+   * Idempotent — safe to call on an already up-to-date spreadsheet.
+   *
+   * What this does:
+   *   - Ensures every sheet in SHEET_SCHEMAS exists (creates missing ones)
+   *   - Refreshes README content
+   *   - Writes schema_version to Config
+   */
+  async reconcileSchema(): Promise<void> {
+    console.log('🔧 Starting schema reconciliation...');
+
+    const sheets = await this.getSheetsList();
+    const existingTitles = new Set(sheets.map((s) => s.title));
+
+    // Ensure each expected sheet exists
+    for (const [sheetName, headers] of Object.entries(SHEET_SCHEMAS)) {
+      if (sheetName === 'README') continue; // handled separately below
+      if (!existingTitles.has(sheetName)) {
+        console.log(`  📋 Creating missing sheet: ${sheetName}`);
+        const sheetId = await this.addSheetTab(sheetName);
+        if (headers.length > 0) {
+          await this.writeHeaders(sheetId, headers as string[]);
+        }
+      }
+    }
+
+    // Refresh README (create if missing, always update content)
+    console.log('  📚 Refreshing README sheet');
+    await this.refreshReadme();
+
+    // Write current schema version to Config
+    await this.setConfig('schema_version', String(SCHEMA_VERSION));
+
+    console.log(`✅ Schema reconciliation complete (v${SCHEMA_VERSION})`);
   }
 
   // ==================== CONFIG ====================
