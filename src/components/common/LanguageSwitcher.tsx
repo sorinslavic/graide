@@ -13,7 +13,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  onDark?: boolean;
+}
+
+export default function LanguageSwitcher({ onDark = false }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation('common');
 
   const changeLanguage = (lng: string) => {
@@ -27,7 +31,11 @@ export default function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`gap-2 ${onDark ? 'text-white/80 hover:text-white hover:bg-white/10' : ''}`}
+        >
           <Globe className="h-4 w-4" />
           <span className="text-sm font-medium">{getCurrentLanguageLabel()}</span>
         </Button>

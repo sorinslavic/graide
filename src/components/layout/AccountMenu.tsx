@@ -93,19 +93,26 @@ export default function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 h-auto py-2">
-          {user.picture && (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 h-auto py-1.5 px-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl"
+        >
+          {user.picture ? (
             <img
               src={user.picture}
               alt={user.name}
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full ring-2 ring-white/30"
             />
+          ) : (
+            <div className="h-8 w-8 rounded-full ring-2 ring-white/30 bg-white/20 flex items-center justify-center text-white text-sm font-semibold">
+              {user.name?.[0]}
+            </div>
           )}
           <div className="text-left hidden md:block">
-            <p className="text-sm font-medium text-gray-900">{user.name}</p>
-            <p className="text-xs text-gray-500">{user.email}</p>
+            <p className="text-sm font-medium text-white leading-none">{user.name}</p>
+            <p className="text-xs text-white/60 mt-0.5">{user.email}</p>
           </div>
-          <ChevronDown className="h-4 w-4 text-gray-500" />
+          <ChevronDown className="h-4 w-4 text-white/60" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">

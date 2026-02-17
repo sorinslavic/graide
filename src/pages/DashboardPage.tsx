@@ -81,7 +81,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
           {/* Photo Inbox Card */}
           <button
             onClick={() => navigate('/inbox')}
@@ -166,54 +166,6 @@ export default function DashboardPage() {
               </p>
             </div>
           </button>
-        </div>
-
-        {/* Phase Complete Banner */}
-        <div className="mt-8 relative overflow-hidden rounded-2xl shadow-lg">
-          {/* Animated Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-90"></div>
-
-          {/* Animated Sparkles Background */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.1),transparent)] animate-pulse"></div>
-
-          {/* Content */}
-          <div className="relative z-10 p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-6 w-6 text-white animate-pulse" />
-              <h3 className="text-xl font-bold text-white">
-                {t('phase_complete.title')}
-              </h3>
-            </div>
-            <p className="text-white/90 text-sm mb-4">
-              {t('phase_complete.message')}
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white font-medium">
-                  {t('phase_complete.features.oauth')}
-                </span>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white font-medium">
-                  {t('phase_complete.features.routes')}
-                </span>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white font-medium">
-                  {t('phase_complete.features.profile')}
-                </span>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white font-medium">
-                  {t('phase_complete.features.logout')}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Google API Tester (Dev Tool - Hidden by default) */}
