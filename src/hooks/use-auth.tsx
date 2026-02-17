@@ -11,7 +11,7 @@ interface AuthContextType {
   user: UserInfo | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credential: string, userInfo: UserInfo) => Promise<void>;
+  login: (credential: string, userInfo: UserInfo, keepSignedIn?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
 }
@@ -43,8 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loadUserInfo();
   }, []);
 
-  const login = async (credential: string, userInfo: UserInfo) => {
-    await googleAuthService.login(credential, userInfo);
+  const login = async (credential: string, userInfo: UserInfo, keepSignedIn = false) => {
+    await googleAuthService.login(credential, userInfo, keepSignedIn);
     setUser(userInfo);
   };
 

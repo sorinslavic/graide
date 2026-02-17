@@ -8,19 +8,34 @@ import { AuthService, UserInfo } from './auth-service';
 const TOKEN_KEY = 'google_oauth_token';
 const USER_INFO_KEY = 'google_user_info';
 
+// Reads a key from localStorage first, then sessionStorage
+function readStorage(key: string): string | null {
+  return localStorage.getItem(key) ?? sessionStorage.getItem(key);
+}
+
+// Clears a key from both storages
+function clearStorage(key: string): void {
+  localStorage.removeItem(key);
+  sessionStorage.removeItem(key);
+}
+
 export class GoogleAuthService implements AuthService {
   /**
-   * Store OAuth credentials after successful login
+   * Store OAuth credentials after successful login.
+   * keepSignedIn=true → localStorage (persists across sessions)
+   * keepSignedIn=false → sessionStorage (cleared on tab close)
    */
-  async login(credential: string, userInfo: UserInfo): Promise<void> {
+  async login(credential: string, userInfo: UserInfo, keepSignedIn = false): Promise<void> {
     try {
-      // Store the credential token
-      localStorage.setItem(TOKEN_KEY, credential);
+      // Clear any previous tokens from both storages before writing
+      clearStorage(TOKEN_KEY);
+      clearStorage(USER_INFO_KEY);
 
-      // Store user info
-      localStorage.setItem(USER_INFO_KEY, JSON.stringify(userInfo));
+      const storage = keepSignedIn ? localStorage : sessionStorage;
+      storage.setItem(TOKEN_KEY, credential);
+      storage.setItem(USER_INFO_KEY, JSON.stringify(userInfo));
 
-      console.log('✅ User logged in:', userInfo.email);
+      console.log('✅ User logged in:', userInfo.email, keepSignedIn ? '(persistent)' : '(session only)');
     } catch (error) {
       console.error('❌ Login error:', error);
       throw new Error('Failed to store authentication credentials');
@@ -28,12 +43,12 @@ export class GoogleAuthService implements AuthService {
   }
 
   /**
-   * Clear all authentication data
+   * Clear all authentication data from both storages
    */
   async logout(): Promise<void> {
     try {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_INFO_KEY);
+      clearStorage(TOKEN_KEY);
+      clearStorage(USER_INFO_KEY);
       console.log('✅ User logged out');
     } catch (error) {
       console.error('❌ Logout error:', error);
@@ -42,26 +57,26 @@ export class GoogleAuthService implements AuthService {
   }
 
   /**
-   * Get the current OAuth token
+   * Get the current OAuth token (checks both storages)
    */
   async getToken(): Promise<string | null> {
-    return localStorage.getItem(TOKEN_KEY);
+    return readStorage(TOKEN_KEY);
   }
 
   /**
-   * Check if user is currently authenticated
+   * Check if user is currently authenticated (checks both storages)
    */
   isAuthenticated(): boolean {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = readStorage(TOKEN_KEY);
     return token !== null && token.length > 0;
   }
 
   /**
-   * Get stored user information
+   * Get stored user information (checks both storages)
    */
   async getUserInfo(): Promise<UserInfo | null> {
     try {
-      const userInfoStr = localStorage.getItem(USER_INFO_KEY);
+      const userInfoStr = readStorage(USER_INFO_KEY);
       if (!userInfoStr) {
         return null;
       }

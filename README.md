@@ -20,16 +20,16 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ### Key Features
 
 **✅ Implemented:**
-- **Google OAuth Authentication**: Secure login with Drive & Sheets permissions
+- **Google OAuth Authentication**: Secure login with Drive & Sheets permissions; "Keep me signed in" option (sessionStorage vs localStorage)
 - **Workspace Setup**: Automated workspace initialization with Drive folder + spreadsheet
 - **Google Sheets Database**: 8 sheets (README, Classes, Students, Tests, Results, Mistakes, Rubrics, Config)
 - **Subject-Based Class Management**: 4-step wizard for creating classes with subject selection (12 predefined Romanian subjects + custom), school year, class name, and student roster management
 - **Shared Student Rosters**: Multiple subjects can share the same class roster (e.g., Math-5A and Romanian-5A both use "5A" students)
 - **Bulk Student Input**: Paste student names (one per line) or reuse existing rosters
-- **Multi-language Support**: Romanian (default) and English with persistent language selection
+- **Multi-language Support**: Romanian (default) and English with persistent language selection — fully applied across login, dashboard, and class management
 - **Account Management**: View all configuration, reset workspace, logout
 - **Auto-Documentation**: README sheet in spreadsheet explains data structure
-- **Vibrant Design**: Gradient-based UI with animations, shimmer effects, and modern glass-morphism
+- **Vibrant Design**: Gradient-based UI with animations, shimmer effects, and modern glass-morphism — including redesigned two-column login page
 
 **🚧 In Progress:**
 - **Photo Inbox**: Bulk photo upload and student assignment
@@ -87,6 +87,9 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ## Recent Updates
 
 ### February 2026
+- **🔐 Login Page Redesign**: Two-column layout — vibrant purple/pink gradient panel on the left with app benefits, clean white card on the right with Google sign-in button and "Keep me signed in" checkbox
+- **🔑 Persistent Session Control**: "Keep me signed in" checkbox on login — unchecked (default) stores tokens in `sessionStorage` (cleared on tab close), checked stores in `localStorage` (persists across sessions)
+- **🌍 Full Login i18n**: All login page text is now translated in Romanian and English; login page respects the selected language like the rest of the app
 - **📚 Subject-Based Class Management**: Complete class management system
   - 4-step wizard: Subject → School Year → Class Name → Students
   - 12 predefined Romanian subjects (Math, Romanian, English, History, etc.) + custom subjects

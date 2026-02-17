@@ -5,9 +5,9 @@
 
 export interface AuthService {
   /**
-   * Initiate login flow
+   * Store credentials after successful OAuth flow
    */
-  login(): Promise<void>;
+  login(credential: string, userInfo: UserInfo, keepSignedIn?: boolean): Promise<void>;
 
   /**
    * Logout and clear credentials

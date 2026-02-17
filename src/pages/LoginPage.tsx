@@ -1,5 +1,5 @@
 /**
- * Login page - Google OAuth authentication with proper scopes
+ * Login page - Google OAuth authentication
  */
 
 import { useState } from 'react';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { getOAuthClient } from '@/services/auth/google-oauth-client';
-import { Sheet as SheetsIcon, HardDrive, User, Shield, Loader2 } from 'lucide-react';
+import { Sheet as SheetsIcon, HardDrive, User, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/common/Logo';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
@@ -17,65 +17,103 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useTranslation('auth');
   const [isLoading, setIsLoading] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
+
+  const benefits = t('login.benefits', { returnObjects: true }) as string[];
 
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      console.log('🔐 Initiating OAuth flow...');
-
       const oauthClient = getOAuthClient();
-
-      // Request OAuth token with proper scopes
       const tokenResponse = await oauthClient.requestToken();
-      console.log('✅ Received access token with scopes:', tokenResponse.scope);
-
-      // Get user info using the access token
       const userInfo = await oauthClient.getUserInfo(tokenResponse.access_token);
-      console.log('✅ User info retrieved:', userInfo.email);
-
-      // Store credentials
       await login(tokenResponse.access_token, {
         id: userInfo.id,
         email: userInfo.email,
         name: userInfo.name,
         picture: userInfo.picture,
-      });
-
-      console.log('✅ Login successful');
-
-      // Redirect to dashboard
+      }, keepSignedIn);
       navigate('/dashboard');
     } catch (error) {
       console.error('❌ Login failed:', error);
-      alert('Login failed. Please try again and grant all required permissions.');
+      alert(t('errors.login_failed'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-100 via-cream-50 to-navy-50">
-      {/* Language Switcher - Top Right */}
-      <div className="absolute top-4 right-4">
+    <div className="min-h-screen flex">
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-10">
         <LanguageSwitcher />
       </div>
 
-      <div className="flex items-center justify-center min-h-screen py-12 px-4">
-        <div className="max-w-2xl w-full space-y-8 p-8 bg-white rounded-xl shadow-xl border border-cream-200">
-          {/* App Branding */}
-          <div className="text-center">
-            <Logo size="xl" showTagline />
-            <p className="text-navy-600 text-lg mt-4">{t('login.title')}</p>
-            <p className="text-sm text-navy-400 mt-2">{t('login.subtitle')}</p>
+      {/* Left panel — gradient */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-rose-500" />
+
+        {/* Animated shimmer */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(255,255,255,0.15),transparent_60%)] animate-pulse" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
+
+        {/* Logo */}
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold text-white">
+            Gr<span className="text-white/70">AI</span>de
+          </h1>
+          <p className="text-white/70 text-lg font-medium mt-1">{t('login.tagline_sub')}</p>
+        </div>
+
+        <div className="relative z-10 space-y-8">
+          <div>
+            <h2 className="text-3xl font-bold text-white leading-tight whitespace-pre-line">
+              {t('login.tagline')}
+            </h2>
           </div>
 
-          {/* Google Login Button */}
-          <div className="mt-8 flex justify-center">
+          <ul className="space-y-4">
+            {benefits.map((benefit) => (
+              <li key={benefit} className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-white/90 mt-0.5 shrink-0" />
+                <span className="text-white/90 text-sm">{benefit}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Bottom decoration */}
+        <div className="relative z-10">
+          <div className="flex gap-3">
+            <div className="h-1 w-16 bg-white/60 rounded-full" />
+            <div className="h-1 w-8 bg-white/30 rounded-full" />
+            <div className="h-1 w-4 bg-white/20 rounded-full" />
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel — login form */}
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-cream-50">
+        {/* Mobile logo (only shown < lg) */}
+        <div className="lg:hidden mb-10 text-center">
+          <Logo size="xl" showTagline />
+        </div>
+
+        <div className="w-full max-w-md">
+          {/* Card */}
+          <div className="bg-white rounded-2xl shadow-xl border border-cream-200 p-8">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-navy-800">{t('login.welcome_heading')}</h1>
+              <p className="text-navy-500 text-sm mt-1">{t('login.welcome_sub')}</p>
+            </div>
+
+            {/* Google Sign In */}
             <Button
               onClick={handleGoogleLogin}
               disabled={isLoading}
               size="lg"
-              className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm flex items-center gap-3 px-6"
+              className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm flex items-center justify-center gap-3"
             >
               {isLoading ? (
                 <>
@@ -92,87 +130,70 @@ export default function LoginPage() {
                       <path d="M9 3.6c1.3 0 2.5.4 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.4a5.4 5.4 0 0 1 5-3.7z" fill="#EA4335"/>
                     </g>
                   </svg>
-                  Sign in with Google
+                  {t('login.sign_in_button')}
                 </>
               )}
             </Button>
-          </div>
 
-          {/* Permissions Explanation */}
-          <div className="mt-8 border-t border-cream-200 pt-6">
-            <h3 className="text-sm font-semibold text-navy-700 mb-4 flex items-center gap-2">
-              <Shield className="h-4 w-4 text-coral-500" />
-              {t('login.permissions_title')}
-            </h3>
-            <p className="text-sm text-navy-600 mb-4">
-              {t('login.permissions_intro')}
+            {/* Keep me signed in */}
+            <div className="mt-4 flex justify-center">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={keepSignedIn}
+                  onChange={(e) => setKeepSignedIn(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-purple-600 cursor-pointer"
+                />
+                <span className="text-sm text-navy-600">{t('login.keep_signed_in')}</span>
+              </label>
+            </div>
+
+            {/* Divider */}
+            <div className="my-6 border-t border-gray-100" />
+
+            {/* Permissions */}
+            <p className="text-xs font-semibold text-navy-500 uppercase tracking-wide mb-3">
+              {t('login.permissions_section')}
             </p>
-
-            <div className="space-y-4">
-              {/* Google Sheets Permission */}
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-lg bg-navy-50 flex items-center justify-center">
-                    <SheetsIcon className="h-5 w-5 text-navy-600" />
-                  </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0">
+                  <SheetsIcon className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-navy-700">
-                    {t('login.permissions.sheets.title')}
-                  </p>
-                  <p className="text-xs text-navy-500">
-                    {t('login.permissions.sheets.description')}
-                  </p>
+                  <p className="text-xs font-medium text-navy-700">{t('login.permissions.sheets.title')}</p>
+                  <p className="text-xs text-navy-400">{t('login.permissions.sheets.description')}</p>
                 </div>
               </div>
 
-              {/* Google Drive Permission */}
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-lg bg-coral-50 flex items-center justify-center">
-                    <HardDrive className="h-5 w-5 text-coral-500" />
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
+                  <HardDrive className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-navy-700">
-                    {t('login.permissions.drive.title')}
-                  </p>
-                  <p className="text-xs text-navy-500">
-                    {t('login.permissions.drive.description')}
-                  </p>
+                  <p className="text-xs font-medium text-navy-700">{t('login.permissions.drive.title')}</p>
+                  <p className="text-xs text-navy-400">{t('login.permissions.drive.description')}</p>
                 </div>
               </div>
 
-              {/* Profile Permission */}
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-lg bg-navy-50 flex items-center justify-center">
-                    <User className="h-5 w-5 text-navy-600" />
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shrink-0">
+                  <User className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-navy-700">
-                    {t('login.permissions.profile.title')}
-                  </p>
-                  <p className="text-xs text-navy-500">
-                    {t('login.permissions.profile.description')}
-                  </p>
+                  <p className="text-xs font-medium text-navy-700">{t('login.permissions.profile.title')}</p>
+                  <p className="text-xs text-navy-400">{t('login.permissions.profile.description')}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Privacy Note */}
-          <div className="mt-6 p-4 bg-navy-50 border border-navy-200 rounded-lg">
-            <p className="text-xs text-navy-700">
-              <strong>🔒 {t('login.privacy_note')}</strong>
+          {/* Privacy note */}
+          <div className="mt-4 flex items-start gap-2 px-2">
+            <Sparkles className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
+            <p className="text-xs text-navy-500">
+              {t('login.privacy_short')}
             </p>
-          </div>
-
-          {/* Terms */}
-          <div className="mt-6 text-center text-xs text-navy-400">
-            <p>{t('login.terms')}</p>
-            <p className="mt-2">{t('login.storage_note')}</p>
           </div>
         </div>
       </div>
