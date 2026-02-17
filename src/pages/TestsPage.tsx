@@ -15,12 +15,14 @@ import {
   Zap,
   Archive,
   Calendar,
+  UserX,
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import CreateTestDialog from '@/components/tests/CreateTestDialog';
+import AbsenceMarkingDialog from '@/components/tests/AbsenceMarkingDialog';
 import { localSheetsService } from '@/services/google/local-sheets-service';
-import { Test, Class, AssessmentType, TestStatus } from '@/types';
+import { Test, Submission, Class, AssessmentType, TestStatus } from '@/types';
 import { toast } from 'sonner';
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -119,12 +121,18 @@ const TYPE_BADGE: Record<AssessmentType, string> = {
 interface TestCardProps {
   test: Test;
   classMap: Map<string, Class>;
+  submissions: Submission[];
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
+  onMarkAbsences: (test: Test) => void;
 }
 
-function TestCard({ test, classMap, onArchive, onUnarchive }: TestCardProps) {
+function TestCard({ test, classMap, submissions, onArchive, onUnarchive, onMarkAbsences }: TestCardProps) {
   const { t, i18n } = useTranslation('tests');
+
+  const totalStudents = submissions.length;
+  const absentCount = submissions.filter((s) => s.status === 'absent').length;
+  const correctedCount = submissions.filter((s) => s.status === 'corrected').length;
   const config = TYPE_CONFIG[test.type] ?? TYPE_CONFIG.test;
   const Icon = config.icon;
 
@@ -194,7 +202,14 @@ function TestCard({ test, classMap, onArchive, onUnarchive }: TestCardProps) {
           </div>
 
           {/* Actions menu */}
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => onMarkAbsences(test)}
+              className="p-1.5 hover:bg-orange-50 rounded-lg text-gray-400 hover:text-orange-500 transition-colors"
+              title={t('actions.mark_absences', { defaultValue: 'Mark absences' })}
+            >
+              <UserX className="h-4 w-4" />
+            </button>
             <button
               onClick={() =>
                 test.status === 'active' ? onArchive(test.id) : onUnarchive(test.id)
@@ -208,15 +223,34 @@ function TestCard({ test, classMap, onArchive, onUnarchive }: TestCardProps) {
         </div>
 
         {/* Footer meta */}
-        <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">
+        <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-3 text-xs text-gray-500 flex-wrap">
           <span className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5" />
             {givenDate}
             {deadlineDate && ` → ${deadlineDate}`}
           </span>
-          <span className="flex items-center gap-1">
-            <span className="font-medium text-gray-700">{t(`grading.${test.grading_system}`)}</span>
-          </span>
+          <span className="text-gray-300">·</span>
+          <span className="font-medium text-gray-600">{t(`grading.${test.grading_system}`)}</span>
+          {totalStudents > 0 && (
+            <>
+              <span className="text-gray-300">·</span>
+              <span className="flex items-center gap-1">
+                <Users className="h-3.5 w-3.5" />
+                {totalStudents}
+              </span>
+              {absentCount > 0 && (
+                <span className="text-orange-500 font-medium flex items-center gap-1">
+                  <UserX className="h-3.5 w-3.5" />
+                  {absentCount}
+                </span>
+              )}
+              {correctedCount > 0 && (
+                <span className="text-emerald-600 font-medium">
+                  {correctedCount}/{totalStudents - absentCount} ✓
+                </span>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -229,19 +263,23 @@ export default function TestsPage() {
   const { t } = useTranslation('tests');
   const [tests, setTests] = useState<Test[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<TestStatus>('active');
   const [showCreate, setShowCreate] = useState(false);
+  const [absenceTarget, setAbsenceTarget] = useState<Test | null>(null);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [testsData, classesData] = await Promise.all([
+      const [testsData, classesData, subsData] = await Promise.all([
         localSheetsService.getTests(),
         localSheetsService.getClasses(),
+        localSheetsService.getSubmissions(),
       ]);
       setTests(testsData);
       setClasses(classesData);
+      setSubmissions(subsData);
     } catch (error) {
       console.error('Failed to load tests:', error);
       toast.error('Failed to load tests');
@@ -430,8 +468,10 @@ export default function TestsPage() {
                         key={test.id}
                         test={test}
                         classMap={classMap}
+                        submissions={submissions.filter((s) => s.test_id === test.id)}
                         onArchive={handleArchive}
                         onUnarchive={handleUnarchive}
+                        onMarkAbsences={setAbsenceTarget}
                       />
                     ))}
                   </div>
@@ -447,6 +487,16 @@ export default function TestsPage() {
         onClose={() => setShowCreate(false)}
         onSuccess={loadData}
       />
+
+      {absenceTarget && (
+        <AbsenceMarkingDialog
+          test={absenceTarget}
+          classMap={classMap}
+          open={!!absenceTarget}
+          onClose={() => setAbsenceTarget(null)}
+          onSaved={loadData}
+        />
+      )}
     </div>
   );
 }

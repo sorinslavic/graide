@@ -49,7 +49,16 @@
   "actions": {
     "archive": "Archive",
     "unarchive": "Restore",
-    "delete": "Delete"
+    "delete": "Delete",
+    "mark_absences": "Mark absences"
+  },
+  "absences": {
+    "title": "Mark Absences",
+    "no_submissions": "No submissions found. Students may not have been assigned yet.",
+    "saved": "{{count}} student(s) updated",
+    "save_error": "Failed to save absences.",
+    "saving": "Saving...",
+    "save": "Save Absences"
   },
   "form": {
     "title_create": "New Assessment",

@@ -49,7 +49,16 @@
   "actions": {
     "archive": "Arhivează",
     "unarchive": "Restaurează",
-    "delete": "Șterge"
+    "delete": "Șterge",
+    "mark_absences": "Marchează absențe"
+  },
+  "absences": {
+    "title": "Marchează Absențe",
+    "no_submissions": "Nicio lucrare găsită. Elevii poate nu au fost asignați încă.",
+    "saved": "{{count}} elev(i) actualizat(ți)",
+    "save_error": "Eroare la salvarea absențelor.",
+    "saving": "Se salvează...",
+    "save": "Salvează Absențele"
   },
   "form": {
     "title_create": "Evaluare Nouă",
