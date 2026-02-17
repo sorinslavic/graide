@@ -23,6 +23,8 @@ import { localDriveService } from '@/services/google/local-drive-service';
 interface WorkspaceSetupDialogProps {
   open: boolean;
   initialFolderId?: string | null;
+  /** reinitialize: folder exists but spreadsheet was deleted — skip URL form */
+  mode?: 'setup' | 'reinitialize';
   onComplete: (folderId: string, spreadsheetId: string, organizedFolderId: string) => void;
   onError: (error: string) => void;
 }
@@ -30,6 +32,7 @@ interface WorkspaceSetupDialogProps {
 export default function WorkspaceSetupDialog({
   open,
   initialFolderId,
+  mode = 'setup',
   onComplete,
   onError,
 }: WorkspaceSetupDialogProps) {
@@ -96,10 +99,47 @@ export default function WorkspaceSetupDialog({
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-md">
-        {step === 'input' && (
+
+        {/* Reinitialize mode — folder exists, spreadsheet was deleted/trashed */}
+        {mode === 'reinitialize' && step === 'input' && (
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-orange-500" />
+                Workspace data missing
+              </DialogTitle>
+              <DialogDescription className="pt-4 space-y-3">
+                <p className="text-sm text-gray-700">
+                  Your <strong>graide-data</strong> spreadsheet was deleted or moved to trash. grAIde needs to recreate it in your existing Drive folder.
+                </p>
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                  Your Drive folder is still configured — only the spreadsheet will be recreated. No data from previous sessions will be recovered.
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={handleSetup}
+                disabled={isInitializing}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white border-0"
+              >
+                {isInitializing ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Recreating...</>
+                ) : (
+                  <>
+                    <Sheet className="h-4 w-4 mr-2" />
+                    Recreate Workspace
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
+
+        {mode === 'setup' && step === 'input' && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-navy-800">
                 🚀 {t('workspace_setup.title')}
               </DialogTitle>
               <DialogDescription className="pt-4 space-y-4">

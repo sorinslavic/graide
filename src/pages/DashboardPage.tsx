@@ -11,6 +11,7 @@ import Header from '@/components/layout/Header';
 import WorkspaceSetupDialog from '@/components/setup/WorkspaceSetupDialog';
 import GoogleAPITester from '@/components/dev/GoogleAPITester';
 import { useAuth } from '@/hooks/use-auth';
+import { initializationService } from '@/services/initialization-service';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -18,21 +19,22 @@ export default function DashboardPage() {
   const { t } = useTranslation('dashboard');
   const [folderId, setFolderId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
+  const [setupMode, setSetupMode] = useState<'setup' | 'reinitialize'>('setup');
   const [showDevTools, setShowDevTools] = useState(false);
 
-  // Check if workspace needs setup (folder OR spreadsheet missing)
+  // Verify workspace on load — checks Drive API so we catch trashed files
   useEffect(() => {
-    const storedFolderId = localStorage.getItem('graide_folder_id');
-    const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
-
-    if (!storedFolderId || !spreadsheetId) {
-      // Either folder or spreadsheet missing - show unified setup dialog
-      setFolderId(storedFolderId);
-      setShowSetup(true);
-    } else {
-      setFolderId(storedFolderId);
-      setShowSetup(false);
-    }
+    const verify = async () => {
+      const status = await initializationService.verifyInitialization();
+      setFolderId(status.folderId ?? null);
+      if (!status.isInitialized) {
+        // Folder configured but spreadsheet missing/trashed → reinitialize mode
+        // No folder at all → full setup mode
+        setSetupMode(status.folderId ? 'reinitialize' : 'setup');
+        setShowSetup(true);
+      }
+    };
+    verify();
   }, []);
 
   const handleSetupComplete = (
@@ -64,6 +66,7 @@ export default function DashboardPage() {
         <WorkspaceSetupDialog
           open={showSetup}
           initialFolderId={folderId}
+          mode={setupMode}
           onComplete={handleSetupComplete}
           onError={handleSetupError}
         />

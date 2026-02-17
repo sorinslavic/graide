@@ -87,6 +87,7 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ## Recent Updates
 
 ### February 2026
+- **🗑️ Trash-Aware Initialization**: Dashboard now verifies cached Drive/Sheets IDs against the Drive API on load — if the spreadsheet was moved to trash, the stale cache is cleared and a "Recreate Workspace" prompt appears instead of silently using the deleted file
 - **🎨 Gradient Header & Navigation**: Full-width purple/pink/rose gradient header replacing the plain white bar — includes app logo, navigation links (Dashboard, Classes, Inbox, Analytics) with active state highlighting, language switcher, and avatar account menu styled for the gradient background; mobile-responsive with horizontal scroll nav
 - **🔐 Login Page Redesign**: Two-column layout — vibrant purple/pink gradient panel on the left with app benefits, clean white card on the right with Google sign-in button and "Keep me signed in" checkbox
 - **🔑 Persistent Session Control**: "Keep me signed in" checkbox on login — unchecked (default) stores tokens in `sessionStorage` (cleared on tab close), checked stores in `localStorage` (persists across sessions)

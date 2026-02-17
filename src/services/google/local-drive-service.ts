@@ -310,6 +310,23 @@ export class LocalDriveService implements DriveService {
   }
 
   /**
+   * Check if a file/folder is trashed or inaccessible.
+   * Returns true if the file is in trash or cannot be found.
+   */
+  async isFileTrashed(fileId: string): Promise<boolean> {
+    try {
+      const response = await this.fetchAPI(
+        `${DRIVE_API_BASE}/files/${fileId}?fields=trashed`
+      );
+      const data = await response.json();
+      return data.trashed === true;
+    } catch {
+      // Can't access the file — treat as gone
+      return true;
+    }
+  }
+
+  /**
    * Get file by ID
    */
   async getFile(fileId: string): Promise<DriveFile> {

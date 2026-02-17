@@ -81,6 +81,50 @@ export class InitializationService {
   }
 
   /**
+   * Async verification that also checks Drive API for trashed files.
+   * Clears any stale cached IDs and returns the true initialization state.
+   * Call this on dashboard load instead of the sync checkInitialization().
+   */
+  async verifyInitialization(): Promise<InitializationStatus> {
+    const folderId = localStorage.getItem('graide_folder_id');
+    const spreadsheetId = localStorage.getItem('graide_spreadsheet_id');
+    const organizedFolderId = localStorage.getItem('graide_organized_folder_id');
+
+    if (!folderId) {
+      return { isInitialized: false, error: 'No Drive folder configured' };
+    }
+
+    // Verify spreadsheet isn't trashed
+    if (spreadsheetId) {
+      const trashed = await localDriveService.isFileTrashed(spreadsheetId);
+      if (trashed) {
+        console.log('⚠️ Cached spreadsheet is trashed — clearing');
+        localStorage.removeItem('graide_spreadsheet_id');
+        // Also clear organized folder since both live together
+        localStorage.removeItem('graide_organized_folder_id');
+        return { isInitialized: false, folderId };
+      }
+    }
+
+    // Verify organized folder isn't trashed (non-blocking — can be recreated)
+    if (organizedFolderId) {
+      const trashed = await localDriveService.isFileTrashed(organizedFolderId);
+      if (trashed) {
+        console.log('⚠️ Cached organized folder is trashed — clearing');
+        localStorage.removeItem('graide_organized_folder_id');
+      }
+    }
+
+    const currentSpreadsheetId = localStorage.getItem('graide_spreadsheet_id');
+    return {
+      isInitialized: !!currentSpreadsheetId,
+      folderId,
+      spreadsheetId: currentSpreadsheetId || undefined,
+      organizedFolderId: localStorage.getItem('graide_organized_folder_id') || undefined,
+    };
+  }
+
+  /**
    * Re-initialize (useful if spreadsheet or folder was deleted)
    */
   async reinitialize(): Promise<InitializationStatus> {
