@@ -150,6 +150,7 @@ grAIde uses Google Sheets as its database. The spreadsheet structure (sheets, co
 |---------|-------------|
 | 1 | Initial schema — 7 data sheets (Classes, Students, Tests, Results, Mistakes, Rubrics, Config) |
 | 2 | Added README sheet with auto-generated documentation |
+| 3 | Replaced Results → Submissions (new status flow, drive_file_ids CSV); Mistakes → SubmissionDetails (per question/photo); Tests redesigned with type, class_ids, given_at, deadline, grading_system, status |
 
 ### ⚠️ When You Must Bump `SCHEMA_VERSION`
 

@@ -7,13 +7,13 @@ import {
   Class,
   Student,
   Test,
-  Result,
-  Mistake,
+  Submission,
+  SubmissionDetail,
   Rubric,
   Config,
   SHEET_NAMES,
 } from '@/types';
-import { SheetsService, ResultFilters } from './sheets-service';
+import { SheetsService, TestFilters, SubmissionFilters } from './sheets-service';
 import { googleAuthService } from '../auth/google-auth-service';
 
 const SPREADSHEET_NAME = 'graide-data';
@@ -26,8 +26,11 @@ const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
  * History:
  *   1 — initial schema (7 data sheets, no README, no schema_version)
  *   2 — added README sheet with documentation
+ *   3 — replaced Results/Mistakes with Submissions/SubmissionDetails;
+ *       updated Tests columns (type, class_ids, given_at, deadline,
+ *       grading_system, max_score, status, drive_folder_id)
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 /**
  * Schema definitions for each sheet (column headers)
@@ -45,40 +48,40 @@ const SHEET_SCHEMAS = {
   [SHEET_NAMES.STUDENTS]: ['id', 'class_name', 'school_year', 'name', 'student_num'],
   [SHEET_NAMES.TESTS]: [
     'id',
-    'subject',
-    'class_name',
-    'school_year',
     'name',
-    'date',
-    'total_points',
-    'num_questions',
-    'points_per_q',
+    'type',
+    'class_ids',
+    'given_at',
+    'deadline',
+    'grading_system',
+    'max_score',
+    'status',
+    'drive_folder_id',
     'created_at',
   ],
-  [SHEET_NAMES.RESULTS]: [
+  [SHEET_NAMES.SUBMISSIONS]: [
     'id',
-    'student_id',
     'test_id',
-    'subject',
-    'class_name',
-    'school_year',
-    'drive_file_id',
-    'file_path',
-    'total_score',
-    'ai_score',
+    'student_id',
+    'class_id',
     'status',
-    'assigned_at',
-    'graded_at',
-    'reviewed_at',
-    'teacher_notes',
+    'grade',
+    'ai_grade',
+    'drive_file_ids',
+    'notes',
+    'corrected_at',
+    'created_at',
   ],
-  [SHEET_NAMES.MISTAKES]: [
+  [SHEET_NAMES.SUBMISSION_DETAILS]: [
     'id',
-    'result_id',
+    'submission_id',
+    'file_id',
     'question_num',
     'mistake_type',
     'description',
     'points_deducted',
+    'ai_notes',
+    'teacher_notes',
     'ai_confidence',
   ],
   [SHEET_NAMES.RUBRICS]: [
@@ -330,21 +333,21 @@ export class LocalSheetsService implements SheetsService {
       ],
       [
         'Tests',
-        'Test metadata',
-        'subject, class_name, school_year, name, date',
-        'Linked by subject+class_name+year',
+        'Assessment definitions (tests, homework, projects)',
+        'name, type, class_ids, given_at, deadline, grading_system',
+        'One row per assessment; class_ids is comma-separated Class IDs',
       ],
       [
-        'Results',
-        'Student test submissions',
-        'student_id, test_id, total_score, status',
-        'Central table linking photos to grades',
+        'Submissions',
+        'One per student per test — tracks grading status and photos',
+        'test_id, student_id, class_id, status, grade, drive_file_ids',
+        'Status: new → correcting → corrected | absent',
       ],
       [
-        'Mistakes',
-        'Error tracking per question',
-        'result_id, question_num, mistake_type, points_deducted',
-        'Linked to Results via result_id',
+        'SubmissionDetails',
+        'Per-question details for each submission',
+        'submission_id, question_num, mistake_type, points_deducted',
+        'Linked to Submissions via submission_id',
       ],
       [
         'Rubrics',
@@ -367,16 +370,16 @@ export class LocalSheetsService implements SheetsService {
         '',
         '',
       ],
-      ['Subject + Class Name → Tests', 'Tests linked by subject+class_name+year', '', ''],
+      ['Tests → Classes', 'Tests.class_ids contains comma-separated Class IDs', '', ''],
       [
-        'Students + Tests → Results',
-        'Each student submission for a test (student_id, test_id)',
+        'Tests + Students → Submissions',
+        'One Submission per student per test (test_id + student_id + class_id)',
         '',
         '',
       ],
       [
-        'Results → Mistakes',
-        'Each result can have multiple mistakes (result_id)',
+        'Submissions → SubmissionDetails',
+        'Each submission can have multiple per-question details (submission_id)',
         '',
         '',
       ],
@@ -395,23 +398,21 @@ export class LocalSheetsService implements SheetsService {
       ['class_name', 'String', 'Class identifier (shared across subjects)', '5A, 7B, 8C'],
       ['student_id', 'String', 'Reference to Students.id', '1234567890-abc123'],
       ['test_id', 'String', 'Reference to Tests.id', '1234567890-abc123'],
-      ['result_id', 'String', 'Reference to Results.id', '1234567890-abc123'],
+      ['submission_id', 'String', 'Reference to Submissions.id', '1234567890-abc123'],
+      ['class_ids', 'String', 'Comma-separated Class IDs (Tests)', 'id1,id2,id3'],
       ['school_year', 'String', 'Academic year', '2025-2026'],
       ['grade_level', 'String', 'Grade number', '5, 6, 7, 8'],
-      ['status', 'String', 'Grading status', 'pending_grade, graded, reviewed'],
+      ['type', 'String', 'Assessment type', 'test, homework, project, quiz'],
+      ['grading_system', 'String', 'Grading scale used', '1-10, 1-100, percentage, points'],
+      ['status (Test)', 'String', 'Test status', 'active, archived'],
+      ['status (Submission)', 'String', 'Submission status', 'new, correcting, corrected, absent'],
       [
         'mistake_type',
         'String',
         'Error category',
         'wrong_formula, calculation_error, concept_error',
       ],
-      ['drive_file_id', 'String', 'Google Drive file ID', 'abc123xyz789'],
-      [
-        'file_path',
-        'String',
-        'Path in organized/ folder',
-        'organized/2025-2026/5A/Math-Test-3/maria.jpg',
-      ],
+      ['drive_file_ids', 'String', 'Comma-separated Drive file IDs for photos', 'fileId1,fileId2'],
       [
         'ai_confidence',
         'Number',
@@ -471,13 +472,13 @@ export class LocalSheetsService implements SheetsService {
       ['', '', '', ''],
       [
         'Q: How do I see all grades for Class 5A?',
-        'A: Go to Results sheet, filter by class_id',
+        'A: Go to Submissions sheet, filter by class_id',
         '',
         '',
       ],
       [
         'Q: How do I find mistakes for a specific student?',
-        'A: Go to Mistakes sheet, join with Results using result_id',
+        'A: Go to SubmissionDetails sheet, join with Submissions using submission_id',
         '',
         '',
       ],
@@ -488,8 +489,8 @@ export class LocalSheetsService implements SheetsService {
         '',
       ],
       [
-        'Q: Can I change test scores?',
-        'A: Yes! Edit total_score in Results sheet',
+        'Q: Can I change test grades?',
+        'A: Yes! Edit grade in Submissions sheet',
         '',
         '',
       ],
@@ -866,14 +867,20 @@ export class LocalSheetsService implements SheetsService {
 
   // ==================== TESTS ====================
 
-  async getTests(classId?: string): Promise<Test[]> {
+  async getTests(filters?: TestFilters): Promise<Test[]> {
     const rows = await this.readSheet(SHEET_NAMES.TESTS);
     const headers = SHEET_SCHEMAS[SHEET_NAMES.TESTS];
 
     let tests = rows.map((row) => this.rowToObject<Test>(headers, row));
 
-    if (classId) {
-      tests = tests.filter((t) => t.class_id === classId);
+    if (filters?.classId) {
+      // class_ids is CSV — check if classId appears in the list
+      tests = tests.filter((t) =>
+        t.class_ids.split(',').map((s) => s.trim()).includes(filters.classId!)
+      );
+    }
+    if (filters?.status) {
+      tests = tests.filter((t) => t.status === filters.status);
     }
 
     return tests;
@@ -926,130 +933,144 @@ export class LocalSheetsService implements SheetsService {
     await this.deleteRow(SHEET_NAMES.TESTS, rowIndex + 2);
   }
 
-  // ==================== RESULTS ====================
+  // ==================== SUBMISSIONS ====================
 
-  async getResults(filters?: ResultFilters): Promise<Result[]> {
-    const rows = await this.readSheet(SHEET_NAMES.RESULTS);
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.RESULTS];
+  async getSubmissions(filters?: SubmissionFilters): Promise<Submission[]> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSIONS);
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSIONS];
 
-    let results = rows.map((row) => this.rowToObject<Result>(headers, row));
+    let submissions = rows.map((row) => this.rowToObject<Submission>(headers, row));
 
-    if (filters) {
-      if (filters.studentId) {
-        results = results.filter((r) => r.student_id === filters.studentId);
-      }
-      if (filters.testId) {
-        results = results.filter((r) => r.test_id === filters.testId);
-      }
-      if (filters.classId) {
-        results = results.filter((r) => r.class_id === filters.classId);
-      }
-      if (filters.schoolYear) {
-        results = results.filter((r) => r.school_year === filters.schoolYear);
-      }
-      if (filters.status) {
-        results = results.filter((r) => r.status === filters.status);
-      }
+    if (filters?.testId) {
+      submissions = submissions.filter((s) => s.test_id === filters.testId);
+    }
+    if (filters?.studentId) {
+      submissions = submissions.filter((s) => s.student_id === filters.studentId);
+    }
+    if (filters?.classId) {
+      submissions = submissions.filter((s) => s.class_id === filters.classId);
+    }
+    if (filters?.status) {
+      submissions = submissions.filter((s) => s.status === filters.status);
     }
 
-    return results;
+    return submissions;
   }
 
-  async getResult(id: string): Promise<Result | null> {
-    const results = await this.getResults();
-    return results.find((r) => r.id === id) || null;
+  async getSubmission(id: string): Promise<Submission | null> {
+    const submissions = await this.getSubmissions();
+    return submissions.find((s) => s.id === id) || null;
   }
 
-  async createResult(resultData: Omit<Result, 'id'>): Promise<Result> {
-    const newResult: Result = {
+  async createSubmission(data: Omit<Submission, 'id' | 'created_at'>): Promise<Submission> {
+    const newSubmission: Submission = {
       id: this.generateId(),
-      ...resultData,
+      ...data,
+      created_at: new Date().toISOString(),
     };
 
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.RESULTS];
-    const row = this.objectToRow(headers, newResult);
-
-    await this.appendRows(SHEET_NAMES.RESULTS, [row]);
-    return newResult;
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSIONS];
+    const row = this.objectToRow(headers, newSubmission as unknown as Record<string, unknown>);
+    await this.appendRows(SHEET_NAMES.SUBMISSIONS, [row]);
+    return newSubmission;
   }
 
-  async updateResult(id: string, resultData: Partial<Result>): Promise<Result> {
-    const rows = await this.readSheet(SHEET_NAMES.RESULTS);
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.RESULTS];
-    const rowIndex = rows.findIndex((row) => row[0] === id);
+  /**
+   * Create one Submission (status: 'new') per student in the given class.
+   * Called automatically when a test is assigned to a class.
+   */
+  async bulkCreateSubmissions(testId: string, classId: string): Promise<Submission[]> {
+    const [students, cls] = await Promise.all([
+      this.getStudents(),
+      this.getClass(classId),
+    ]);
+    if (!cls) throw new Error(`Class ${classId} not found`);
 
-    if (rowIndex === -1) {
-      throw new Error(`Result ${id} not found`);
-    }
+    const studentsInClass = students.filter(
+      (s) => s.class_name === cls.class_name && s.school_year === cls.school_year
+    );
 
-    const existingResult = this.rowToObject<Result>(headers, rows[rowIndex]);
-    const updatedResult = { ...existingResult, ...resultData };
-    const row = this.objectToRow(headers, updatedResult);
-
-    await this.updateRow(SHEET_NAMES.RESULTS, rowIndex + 2, row);
-    return updatedResult;
-  }
-
-  async deleteResult(id: string): Promise<void> {
-    const rows = await this.readSheet(SHEET_NAMES.RESULTS);
-    const rowIndex = rows.findIndex((row) => row[0] === id);
-
-    if (rowIndex === -1) {
-      throw new Error(`Result ${id} not found`);
-    }
-
-    await this.deleteRow(SHEET_NAMES.RESULTS, rowIndex + 2);
-  }
-
-  // ==================== MISTAKES ====================
-
-  async getMistakes(resultId: string): Promise<Mistake[]> {
-    const rows = await this.readSheet(SHEET_NAMES.MISTAKES);
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.MISTAKES];
-
-    const mistakes = rows.map((row) => this.rowToObject<Mistake>(headers, row));
-    return mistakes.filter((m) => m.result_id === resultId);
-  }
-
-  async createMistake(mistakeData: Omit<Mistake, 'id'>): Promise<Mistake> {
-    const newMistake: Mistake = {
+    const now = new Date().toISOString();
+    const submissions: Submission[] = studentsInClass.map((student) => ({
       id: this.generateId(),
-      ...mistakeData,
+      test_id: testId,
+      student_id: student.id,
+      class_id: classId,
+      status: 'new' as const,
+      created_at: now,
+    }));
+
+    if (submissions.length === 0) return [];
+
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSIONS];
+    const rows = submissions.map((s) =>
+      this.objectToRow(headers, s as unknown as Record<string, unknown>)
+    );
+    await this.appendRows(SHEET_NAMES.SUBMISSIONS, rows);
+    return submissions;
+  }
+
+  async updateSubmission(id: string, data: Partial<Submission>): Promise<Submission> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSIONS);
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSIONS];
+    const rowIndex = rows.findIndex((row) => row[0] === id);
+
+    if (rowIndex === -1) throw new Error(`Submission ${id} not found`);
+
+    const existing = this.rowToObject<Submission>(headers, rows[rowIndex]);
+    const updated = { ...existing, ...data };
+    const row = this.objectToRow(headers, updated as unknown as Record<string, unknown>);
+    await this.updateRow(SHEET_NAMES.SUBMISSIONS, rowIndex + 2, row);
+    return updated;
+  }
+
+  async deleteSubmission(id: string): Promise<void> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSIONS);
+    const rowIndex = rows.findIndex((row) => row[0] === id);
+    if (rowIndex === -1) throw new Error(`Submission ${id} not found`);
+    await this.deleteRow(SHEET_NAMES.SUBMISSIONS, rowIndex + 2);
+  }
+
+  // ==================== SUBMISSION DETAILS ====================
+
+  async getSubmissionDetails(submissionId: string): Promise<SubmissionDetail[]> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSION_DETAILS);
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSION_DETAILS];
+    const details = rows.map((row) => this.rowToObject<SubmissionDetail>(headers, row));
+    return details.filter((d) => d.submission_id === submissionId);
+  }
+
+  async createSubmissionDetail(data: Omit<SubmissionDetail, 'id'>): Promise<SubmissionDetail> {
+    const newDetail: SubmissionDetail = {
+      id: this.generateId(),
+      ...data,
     };
 
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.MISTAKES];
-    const row = this.objectToRow(headers, newMistake);
-
-    await this.appendRows(SHEET_NAMES.MISTAKES, [row]);
-    return newMistake;
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSION_DETAILS];
+    const row = this.objectToRow(headers, newDetail as unknown as Record<string, unknown>);
+    await this.appendRows(SHEET_NAMES.SUBMISSION_DETAILS, [row]);
+    return newDetail;
   }
 
-  async updateMistake(id: string, mistakeData: Partial<Mistake>): Promise<Mistake> {
-    const rows = await this.readSheet(SHEET_NAMES.MISTAKES);
-    const headers = SHEET_SCHEMAS[SHEET_NAMES.MISTAKES];
+  async updateSubmissionDetail(id: string, data: Partial<SubmissionDetail>): Promise<SubmissionDetail> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSION_DETAILS);
+    const headers = SHEET_SCHEMAS[SHEET_NAMES.SUBMISSION_DETAILS];
     const rowIndex = rows.findIndex((row) => row[0] === id);
 
-    if (rowIndex === -1) {
-      throw new Error(`Mistake ${id} not found`);
-    }
+    if (rowIndex === -1) throw new Error(`SubmissionDetail ${id} not found`);
 
-    const existingMistake = this.rowToObject<Mistake>(headers, rows[rowIndex]);
-    const updatedMistake = { ...existingMistake, ...mistakeData };
-    const row = this.objectToRow(headers, updatedMistake);
-
-    await this.updateRow(SHEET_NAMES.MISTAKES, rowIndex + 2, row);
-    return updatedMistake;
+    const existing = this.rowToObject<SubmissionDetail>(headers, rows[rowIndex]);
+    const updated = { ...existing, ...data };
+    const row = this.objectToRow(headers, updated as unknown as Record<string, unknown>);
+    await this.updateRow(SHEET_NAMES.SUBMISSION_DETAILS, rowIndex + 2, row);
+    return updated;
   }
 
-  async deleteMistake(id: string): Promise<void> {
-    const rows = await this.readSheet(SHEET_NAMES.MISTAKES);
+  async deleteSubmissionDetail(id: string): Promise<void> {
+    const rows = await this.readSheet(SHEET_NAMES.SUBMISSION_DETAILS);
     const rowIndex = rows.findIndex((row) => row[0] === id);
-
-    if (rowIndex === -1) {
-      throw new Error(`Mistake ${id} not found`);
-    }
-
-    await this.deleteRow(SHEET_NAMES.MISTAKES, rowIndex + 2);
+    if (rowIndex === -1) throw new Error(`SubmissionDetail ${id} not found`);
+    await this.deleteRow(SHEET_NAMES.SUBMISSION_DETAILS, rowIndex + 2);
   }
 
   // ==================== RUBRICS ====================

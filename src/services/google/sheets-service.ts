@@ -7,8 +7,8 @@ import {
   Class,
   Student,
   Test,
-  Result,
-  Mistake,
+  Submission,
+  SubmissionDetail,
   Rubric,
   Config,
 } from '@/types';
@@ -38,24 +38,26 @@ export interface SheetsService {
   deleteStudent(id: string): Promise<void>;
 
   // Tests
-  getTests(classId?: string): Promise<Test[]>;
+  getTests(filters?: TestFilters): Promise<Test[]>;
   getTest(id: string): Promise<Test | null>;
   createTest(testData: Omit<Test, 'id' | 'created_at'>): Promise<Test>;
   updateTest(id: string, testData: Partial<Test>): Promise<Test>;
   deleteTest(id: string): Promise<void>;
 
-  // Results
-  getResults(filters?: ResultFilters): Promise<Result[]>;
-  getResult(id: string): Promise<Result | null>;
-  createResult(resultData: Omit<Result, 'id'>): Promise<Result>;
-  updateResult(id: string, resultData: Partial<Result>): Promise<Result>;
-  deleteResult(id: string): Promise<void>;
+  // Submissions
+  getSubmissions(filters?: SubmissionFilters): Promise<Submission[]>;
+  getSubmission(id: string): Promise<Submission | null>;
+  createSubmission(data: Omit<Submission, 'id' | 'created_at'>): Promise<Submission>;
+  /** Create one Submission per student in the given class for a test */
+  bulkCreateSubmissions(testId: string, classId: string): Promise<Submission[]>;
+  updateSubmission(id: string, data: Partial<Submission>): Promise<Submission>;
+  deleteSubmission(id: string): Promise<void>;
 
-  // Mistakes
-  getMistakes(resultId: string): Promise<Mistake[]>;
-  createMistake(mistakeData: Omit<Mistake, 'id'>): Promise<Mistake>;
-  updateMistake(id: string, mistakeData: Partial<Mistake>): Promise<Mistake>;
-  deleteMistake(id: string): Promise<void>;
+  // Submission Details
+  getSubmissionDetails(submissionId: string): Promise<SubmissionDetail[]>;
+  createSubmissionDetail(data: Omit<SubmissionDetail, 'id'>): Promise<SubmissionDetail>;
+  updateSubmissionDetail(id: string, data: Partial<SubmissionDetail>): Promise<SubmissionDetail>;
+  deleteSubmissionDetail(id: string): Promise<void>;
 
   // Rubrics
   getRubrics(testId: string): Promise<Rubric[]>;
@@ -69,12 +71,16 @@ export interface SheetsService {
   getAllConfig(): Promise<Config[]>;
 }
 
-export interface ResultFilters {
-  studentId?: string;
-  testId?: string;
+export interface TestFilters {
   classId?: string;
-  schoolYear?: string;
-  status?: Result['status'];
+  status?: Test['status'];
+}
+
+export interface SubmissionFilters {
+  testId?: string;
+  studentId?: string;
+  classId?: string;
+  status?: Submission['status'];
 }
 
 /**
