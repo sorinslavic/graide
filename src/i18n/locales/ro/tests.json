@@ -1,12 +1,15 @@
 {
   "page_title": "Lucrări și Teme",
   "add_test_button": "Evaluare Nouă",
+  "loading": "Se încarcă...",
   "empty_state": {
     "title": "Nicio evaluare încă",
     "subtitle": "Creează prima ta lucrare sau temă!",
     "description": "Urmărește lucrări, teme și proiecte pentru toate clasele tale. Vezi cine a fost corectat și ce mai rămâne de corectat.",
     "cta": "Creează Prima Evaluare"
   },
+  "empty_active": "Nicio evaluare activă. Creează una pentru a începe.",
+  "empty_archived": "Nicio evaluare arhivată.",
   "how_it_works": {
     "step1": {
       "title": "Creează o evaluare",
@@ -43,6 +46,11 @@
     "corrected": "Corectată",
     "absent": "Absent"
   },
+  "actions": {
+    "archive": "Arhivează",
+    "unarchive": "Restaurează",
+    "delete": "Șterge"
+  },
   "form": {
     "title_create": "Evaluare Nouă",
     "title_edit": "Editează Evaluarea",
@@ -59,7 +67,9 @@
     "create": "Creează Evaluarea",
     "update": "Salvează Modificările",
     "creating": "Se creează...",
-    "cancel": "Anulează"
+    "cancel": "Anulează",
+    "create_success": "Evaluare creată!",
+    "create_error": "Eroare la crearea evaluării."
   },
   "timeline": {
     "this_week": "Săptămâna aceasta",

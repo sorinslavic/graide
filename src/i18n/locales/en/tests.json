@@ -1,12 +1,15 @@
 {
   "page_title": "Tests & Assignments",
   "add_test_button": "New Assessment",
+  "loading": "Loading...",
   "empty_state": {
     "title": "No assessments yet",
     "subtitle": "Create your first test or homework!",
     "description": "Track tests, homework, and projects for all your classes. See who's been graded and what still needs correcting.",
     "cta": "Create First Assessment"
   },
+  "empty_active": "No active assessments. Create one to get started.",
+  "empty_archived": "No archived assessments.",
   "how_it_works": {
     "step1": {
       "title": "Create an assessment",
@@ -43,6 +46,11 @@
     "corrected": "Corrected",
     "absent": "Absent"
   },
+  "actions": {
+    "archive": "Archive",
+    "unarchive": "Restore",
+    "delete": "Delete"
+  },
   "form": {
     "title_create": "New Assessment",
     "title_edit": "Edit Assessment",
@@ -59,7 +67,9 @@
     "create": "Create Assessment",
     "update": "Save Changes",
     "creating": "Creating...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "create_success": "Assessment created!",
+    "create_error": "Failed to create assessment."
   },
   "timeline": {
     "this_week": "This Week",
