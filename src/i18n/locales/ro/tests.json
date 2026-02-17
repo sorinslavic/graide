@@ -1,0 +1,76 @@
+{
+  "page_title": "Lucrări și Teme",
+  "add_test_button": "Evaluare Nouă",
+  "empty_state": {
+    "title": "Nicio evaluare încă",
+    "subtitle": "Creează prima ta lucrare sau temă!",
+    "description": "Urmărește lucrări, teme și proiecte pentru toate clasele tale. Vezi cine a fost corectat și ce mai rămâne de corectat.",
+    "cta": "Creează Prima Evaluare"
+  },
+  "how_it_works": {
+    "step1": {
+      "title": "Creează o evaluare",
+      "desc": "Alege tipul (lucrare, temă, proiect), asignează la una sau mai multe clase și setează data și sistemul de notare."
+    },
+    "step2": {
+      "title": "Urmărește lucrările",
+      "desc": "Fiecare elev primește automat o lucrare. Marchează absențele, atașează poze și urmărește progresul corectării."
+    },
+    "step3": {
+      "title": "Notează și revizuiește",
+      "desc": "AI corectează pozele, tu verifici și aprobi. Statusul trece din Nou → În corectare → Corectat."
+    }
+  },
+  "types": {
+    "test": "Lucrare",
+    "homework": "Temă",
+    "project": "Proiect",
+    "quiz": "Test Rapid"
+  },
+  "grading": {
+    "1-10": "1–10",
+    "1-100": "1–100",
+    "percentage": "Procent",
+    "points": "Puncte"
+  },
+  "status": {
+    "active": "Activă",
+    "archived": "Arhivată"
+  },
+  "submission_status": {
+    "new": "Nouă",
+    "correcting": "În corectare",
+    "corrected": "Corectată",
+    "absent": "Absent"
+  },
+  "form": {
+    "title_create": "Evaluare Nouă",
+    "title_edit": "Editează Evaluarea",
+    "name_label": "Nume",
+    "name_placeholder": "ex. Lucrare nr. 3 — Fracții",
+    "type_label": "Tip",
+    "classes_label": "Clase",
+    "classes_placeholder": "Selectează clasele...",
+    "given_at_label": "Data Acordării",
+    "deadline_label": "Termen",
+    "deadline_hint": "Identic cu data acordării pentru lucrări în clasă",
+    "grading_system_label": "Sistem de Notare",
+    "max_score_label": "Nota Maximă",
+    "create": "Creează Evaluarea",
+    "update": "Salvează Modificările",
+    "creating": "Se creează...",
+    "cancel": "Anulează"
+  },
+  "timeline": {
+    "this_week": "Săptămâna aceasta",
+    "last_week": "Săptămâna trecută",
+    "older": "Mai vechi"
+  },
+  "card": {
+    "students_count": "{{count}} elev",
+    "students_count_plural": "{{count}} elevi",
+    "absent_count": "{{count}} absent",
+    "corrected": "{{done}}/{{total}} corectate",
+    "view_photos": "Vezi Poze"
+  }
+}

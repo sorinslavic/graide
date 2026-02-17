@@ -8,6 +8,7 @@ import PhotoInboxPage from './pages/PhotoInboxPage';
 import GradingPage from './pages/GradingPage';
 import ClassesPage from './pages/ClassesPage';
 import StudentsPage from './pages/StudentsPage';
+import TestsPage from './pages/TestsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { Toaster } from './components/ui/toaster';
@@ -65,6 +66,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <GradingPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tests"
+                element={
+                  <ProtectedRoute>
+                    <TestsPage />
                   </ProtectedRoute>
                 }
               />

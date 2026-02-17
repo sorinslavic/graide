@@ -5,7 +5,7 @@
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Inbox, Users, BarChart3, LayoutDashboard } from 'lucide-react';
+import { Inbox, Users, BarChart3, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import AccountMenu from '@/components/layout/AccountMenu';
@@ -13,6 +13,7 @@ import AccountMenu from '@/components/layout/AccountMenu';
 const NAV_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { key: 'classes', href: '/classes', icon: Users },
+  { key: 'tests', href: '/tests', icon: ClipboardList },
   { key: 'inbox', href: '/inbox', icon: Inbox },
   { key: 'analytics', href: '/analytics', icon: BarChart3 },
 ] as const;

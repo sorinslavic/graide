@@ -13,12 +13,14 @@ import enAuth from './locales/en/auth.json';
 import enSetup from './locales/en/setup.json';
 import enDashboard from './locales/en/dashboard.json';
 import enClasses from './locales/en/classes.json';
+import enTests from './locales/en/tests.json';
 
 import roCommon from './locales/ro/common.json';
 import roAuth from './locales/ro/auth.json';
 import roSetup from './locales/ro/setup.json';
 import roDashboard from './locales/ro/dashboard.json';
 import roClasses from './locales/ro/classes.json';
+import roTests from './locales/ro/tests.json';
 
 const resources = {
   en: {
@@ -27,6 +29,7 @@ const resources = {
     setup: enSetup,
     dashboard: enDashboard,
     classes: enClasses,
+    tests: enTests,
   },
   ro: {
     common: roCommon,
@@ -34,6 +37,7 @@ const resources = {
     setup: roSetup,
     dashboard: roDashboard,
     classes: roClasses,
+    tests: roTests,
   },
 };
 

@@ -20,26 +20,69 @@ export interface Student {
   student_num?: string; // Optional student number/ID
 }
 
+export type AssessmentType = 'test' | 'homework' | 'project' | 'quiz';
+export type GradingSystem = '1-10' | '1-100' | 'percentage' | 'points';
+export type TestStatus = 'active' | 'archived';
+export type SubmissionStatus = 'new' | 'correcting' | 'corrected' | 'absent';
+
 export interface Test {
   id: string;
-  subject: string; // Reference to Class.subject
-  class_name: string; // Reference to Class.class_name
-  school_year: string; // Reference to Class.school_year
   name: string;
-  date: string;
-  total_points: number;
-  num_questions: number;
-  points_per_q: string; // Comma-separated: "10,10,20,30,30"
+  type: AssessmentType;
+  /** Comma-separated Class IDs this test was assigned to */
+  class_ids: string;
+  given_at: string; // ISO date — when the test was handed out
+  deadline: string; // ISO date — same as given_at for in-class tests; later for homework
+  grading_system: GradingSystem;
+  max_score: number; // 10 for "1-10", 100 for "1-100", etc.
+  status: TestStatus;
+  /** Optional Drive folder ID linking to all photos for this test */
+  drive_folder_id?: string;
   created_at: string;
 }
 
+export interface Submission {
+  id: string;
+  test_id: string; // FK → Test
+  student_id: string; // FK → Student
+  class_id: string; // FK → Class (denormalized for easy querying)
+  status: SubmissionStatus;
+  grade?: number; // Final grade (teacher-set or AI-suggested + approved)
+  ai_grade?: number; // AI suggested grade (filled in Milestone 4)
+  /** Comma-separated Drive file IDs attached to this submission */
+  drive_file_ids?: string;
+  notes?: string; // Teacher notes
+  corrected_at?: string;
+  created_at: string;
+}
+
+export interface SubmissionDetail {
+  id: string;
+  submission_id: string; // FK → Submission
+  file_id?: string; // Which photo this detail refers to (from drive_file_ids)
+  question_num: number;
+  mistake_type:
+    | 'wrong_formula'
+    | 'calculation_error'
+    | 'concept_error'
+    | 'transcription_error'
+    | 'incomplete'
+    | 'other';
+  description: string;
+  points_deducted: number;
+  ai_notes?: string;
+  teacher_notes?: string;
+  ai_confidence?: number; // 0.0–1.0
+}
+
+/** @deprecated Use Submission instead */
 export interface Result {
   id: string;
-  student_id: string; // Reference to Student.id
-  test_id: string; // Reference to Test.id
-  subject: string; // Reference to Class.subject (denormalized)
-  class_name: string; // Reference to Class.class_name (denormalized)
-  school_year: string; // Reference to Class.school_year (denormalized)
+  student_id: string;
+  test_id: string;
+  subject: string;
+  class_name: string;
+  school_year: string;
   drive_file_id: string;
   file_path: string;
   total_score?: number;
@@ -88,8 +131,12 @@ export const SHEET_NAMES = {
   CLASSES: 'Classes',
   STUDENTS: 'Students',
   TESTS: 'Tests',
-  RESULTS: 'Results',
-  MISTAKES: 'Mistakes',
+  SUBMISSIONS: 'Submissions',
+  SUBMISSION_DETAILS: 'SubmissionDetails',
   RUBRICS: 'Rubrics',
   CONFIG: 'Config',
+  /** @deprecated Use SUBMISSIONS */
+  RESULTS: 'Results',
+  /** @deprecated Use SUBMISSION_DETAILS */
+  MISTAKES: 'Mistakes',
 } as const;

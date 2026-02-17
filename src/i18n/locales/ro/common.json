@@ -14,8 +14,9 @@
   },
   "navigation": {
     "dashboard": "Panou",
-    "inbox": "Poze Teste",
     "classes": "Clase",
+    "tests": "Lucrări",
+    "inbox": "Poze",
     "analytics": "Analize",
     "settings": "Setări"
   },

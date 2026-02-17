@@ -14,8 +14,9 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
-    "inbox": "Photo Inbox",
     "classes": "Classes",
+    "tests": "Tests",
+    "inbox": "Photo Inbox",
     "analytics": "Analytics",
     "settings": "Settings"
   },
