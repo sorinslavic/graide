@@ -2,15 +2,15 @@
 
 ## Milestone Progress
 
-**Milestone 0**: ✅ Complete - Project scaffold with types, services, routing
-**Milestone 1**: 🚧 In Progress - Phase 1/5 Complete
-- ✅ **Phase 1**: Google OAuth authentication (login, logout, protected routes)
-- ⏳ **Phase 2**: Google Sheets service
-- ⏳ **Phase 3**: Google Drive service
-- ⏳ **Phase 4**: First-time setup wizard
-- ⏳ **Phase 5**: Class & Student management UI
-
-See [MILESTONE-1-PLAN.md](../MILESTONE-1-PLAN.md) for detailed implementation plan.
+| Milestone | Status | Description |
+|-----------|--------|-------------|
+| 0: Scaffold | ✅ Complete | React + Vite + TypeScript + shadcn/ui, service layer, routing |
+| 1: Auth + APIs | ✅ Complete | Google OAuth, Sheets CRUD (8 sheets), Drive operations, workspace init |
+| 2: Class Management | ✅ Complete | Full class/student CRUD, i18n (RO/EN), vibrant gradient UI |
+| 3: Photo Inbox | 🚧 Next | Bulk photo upload, assign to students, Drive organisation |
+| 4: AI Grading | ⏳ Pending | Gemini Vision integration, handwriting recognition |
+| 5: Teacher Review | ⏳ Pending | Side-by-side photo vs AI, grade overrides, annotations |
+| 6: Analytics | ⏳ Pending | Mistake patterns, student trends, charts |
 
 ---
 
@@ -126,6 +126,68 @@ git commit -m "docs: update README with setup instructions"
 4. Create PR with description of changes
 5. Wait for review
 6. Merge after approval
+
+---
+
+## Schema Versioning
+
+grAIde uses Google Sheets as its database. The spreadsheet structure (sheets, columns, README content) is defined in code and may change as features are added. A versioning system ensures existing spreadsheets are automatically updated without losing data.
+
+### How It Works
+
+1. **`SCHEMA_VERSION`** — an integer constant in `src/services/google/local-sheets-service.ts`
+2. **`schema_version`** — a key stored in the Config sheet of every user's spreadsheet
+3. On every dashboard load, the app reads `schema_version` from the Config sheet and compares it to `SCHEMA_VERSION` in code
+4. If the code version is higher, `reconcileSchema()` runs automatically:
+   - Creates any missing sheet tabs
+   - Refreshes the README sheet content
+   - Updates `schema_version` in Config
+5. The user sees a toast: *"Workspace updated to the latest version"*
+
+### Version History
+
+| Version | What changed |
+|---------|-------------|
+| 1 | Initial schema — 7 data sheets (Classes, Students, Tests, Results, Mistakes, Rubrics, Config) |
+| 2 | Added README sheet with auto-generated documentation |
+
+### ⚠️ When You Must Bump `SCHEMA_VERSION`
+
+**Bump the version whenever you change any of the following:**
+
+- `SHEET_SCHEMAS` in `local-sheets-service.ts` — adding a new sheet, adding or renaming columns
+- `populateReadme()` — updating the README sheet content
+- Any default rows written to sheets during initialization (e.g., default Config keys)
+
+**How to bump:**
+
+1. Open `src/services/google/local-sheets-service.ts`
+2. Increment `SCHEMA_VERSION` by 1
+3. Add a line to the version history comment above the constant describing what changed
+4. Add a line to the **Version History** table above in this file
+
+```typescript
+// Before
+export const SCHEMA_VERSION = 2;
+
+// After (example: added a new "Templates" sheet in v3)
+/**
+ * ...
+ *   2 — added README sheet with documentation
+ *   3 — added Templates sheet for reusable rubrics   ← add this
+ */
+export const SCHEMA_VERSION = 3;             ← bump this
+```
+
+The reconciliation is **idempotent** — running it on a spreadsheet that is already up to date is safe and does nothing.
+
+### What Reconciliation Does NOT Do
+
+- It does **not** delete existing data or rows
+- It does **not** rename existing columns (renaming a column = add new + migrate data manually)
+- It does **not** remove old sheets
+
+If a migration requires data transformation (e.g., splitting a column into two), handle it with a dedicated migration step inside `reconcileSchema()` before bumping the version.
 
 ---
 
