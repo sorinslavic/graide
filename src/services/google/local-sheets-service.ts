@@ -14,7 +14,7 @@ import {
   SHEET_NAMES,
 } from '@/types';
 import { SheetsService, TestFilters, SubmissionFilters } from './sheets-service';
-import { googleAuthService } from '../auth/google-auth-service';
+import { googleAuthService, AuthExpiredError } from '../auth/google-auth-service';
 
 const SPREADSHEET_NAME = 'graide-data';
 const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
@@ -128,6 +128,7 @@ export class LocalSheetsService implements SheetsService {
     });
 
     if (!response.ok) {
+      if (response.status === 401) throw new AuthExpiredError();
       const error = await response.text();
       throw new Error(`Sheets API error: ${response.status} - ${error}`);
     }

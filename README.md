@@ -158,13 +158,15 @@ You should see:
 ```
   VITE v6.4.1  ready in 329 ms
 
-  ➜  Local:   http://localhost:5173/
+  ➜  Local:   http://localhost:3000/
   ➜  Network: use --host to expose
+
+> **Note:** Port 3000 is fixed in `vite.config.ts`. If it's already in use the server will fail immediately — find and kill the process using `lsof -i :3000` before retrying.
 ```
 
 **Step 4: Open in your browser**
 
-Navigate to: **http://localhost:5173**
+Navigate to: **http://localhost:3000**
 
 You'll see the grAIde login page with the logo and Google sign-in button.
 
@@ -172,11 +174,11 @@ You'll see the grAIde login page with the logo and Google sign-in button.
 
 Once the server is running, you can navigate to:
 
-- **Login**: http://localhost:5173/
-- **Dashboard**: http://localhost:5173/dashboard
-- **Photo Inbox**: http://localhost:5173/inbox
-- **Classes**: http://localhost:5173/classes
-- **Analytics**: http://localhost:5173/analytics
+- **Login**: http://localhost:3000/
+- **Dashboard**: http://localhost:3000/dashboard
+- **Photo Inbox**: http://localhost:3000/inbox
+- **Classes**: http://localhost:3000/classes
+- **Analytics**: http://localhost:3000/analytics
 
 All pages are placeholder UIs right now - features are being implemented in milestones.
 
@@ -234,8 +236,8 @@ touch .env
 3. Enable APIs: Google Sheets API, Google Drive API
 4. Go to "APIs & Services" → "Credentials"
 5. Create OAuth 2.0 Client ID (Web application)
-6. Add authorized JavaScript origins: `http://localhost:5173`
-7. Add authorized redirect URIs: `http://localhost:5173`
+6. Add authorized JavaScript origins: `http://localhost:3000`
+7. Add authorized redirect URIs: `http://localhost:3000`
 8. Copy the Client ID and Client Secret
 
 **Step 3: Edit `.env` file**
@@ -243,7 +245,7 @@ touch .env
 VITE_GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
 VITE_GOOGLE_CLIENT_SECRET=your_client_secret_here
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
-VITE_APP_URL=http://localhost:5173
+VITE_APP_URL=http://localhost:3000
 ```
 
 **Step 4: Restart dev server**

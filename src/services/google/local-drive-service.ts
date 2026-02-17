@@ -5,7 +5,7 @@
 
 import { DriveFile, DriveFolder } from '@/types';
 import { DriveService, ListFilesOptions } from './drive-service';
-import { googleAuthService } from '../auth/google-auth-service';
+import { googleAuthService, AuthExpiredError } from '../auth/google-auth-service';
 
 const DRIVE_API_BASE = 'https://www.googleapis.com/drive/v3';
 const ORGANIZED_FOLDER_NAME = 'organized';
@@ -40,6 +40,7 @@ export class LocalDriveService implements DriveService {
     });
 
     if (!response.ok) {
+      if (response.status === 401) throw new AuthExpiredError();
       const error = await response.text();
       throw new Error(`Drive API error: ${response.status} - ${error}`);
     }
@@ -320,8 +321,9 @@ export class LocalDriveService implements DriveService {
       );
       const data = await response.json();
       return data.trashed === true;
-    } catch {
-      // Can't access the file — treat as gone
+    } catch (err) {
+      if (err instanceof AuthExpiredError) throw err; // propagate — don't treat as "file gone"
+      // Any other error (404, 403, network) — treat as gone
       return true;
     }
   }

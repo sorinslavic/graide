@@ -8,6 +8,14 @@ import { AuthService, UserInfo } from './auth-service';
 const TOKEN_KEY = 'google_oauth_token';
 const USER_INFO_KEY = 'google_user_info';
 
+/** Thrown when a Google API call returns 401 — token expired or revoked. */
+export class AuthExpiredError extends Error {
+  constructor() {
+    super('Google session expired. Please sign in again.');
+    this.name = 'AuthExpiredError';
+  }
+}
+
 // Reads a key from localStorage first, then sessionStorage
 function readStorage(key: string): string | null {
   return localStorage.getItem(key) ?? sessionStorage.getItem(key);

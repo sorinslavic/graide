@@ -12,10 +12,11 @@ import WorkspaceSetupDialog from '@/components/setup/WorkspaceSetupDialog';
 import GoogleAPITester from '@/components/dev/GoogleAPITester';
 import { useAuth } from '@/hooks/use-auth';
 import { initializationService } from '@/services/initialization-service';
+import { AuthExpiredError } from '@/services/auth/google-auth-service';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { t } = useTranslation('dashboard');
   const [folderId, setFolderId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
@@ -26,23 +27,31 @@ export default function DashboardPage() {
   // then reconciles the sheet schema if the code version has moved ahead.
   useEffect(() => {
     const verify = async () => {
-      const status = await initializationService.verifyInitialization();
-      setFolderId(status.folderId ?? null);
+      try {
+        const status = await initializationService.verifyInitialization();
+        setFolderId(status.folderId ?? null);
 
-      if (!status.isInitialized) {
-        setSetupMode(status.folderId ? 'reinitialize' : 'setup');
-        setShowSetup(true);
-        return;
-      }
+        if (!status.isInitialized) {
+          setSetupMode(status.folderId ? 'reinitialize' : 'setup');
+          setShowSetup(true);
+          return;
+        }
 
-      // Workspace is initialized — check if schema needs updating
-      const { wasOutdated } = await initializationService.checkAndReconcileSchema();
-      if (wasOutdated) {
-        toast.success('Workspace updated to the latest version ✨');
+        // Workspace is initialized — check if schema needs updating
+        const { wasOutdated } = await initializationService.checkAndReconcileSchema();
+        if (wasOutdated) {
+          toast.success('Workspace updated to the latest version ✨');
+        }
+      } catch (err) {
+        if (err instanceof AuthExpiredError) {
+          toast.error('Session expired. Please sign in again.');
+          await logout();
+          navigate('/login');
+        }
       }
     };
     verify();
-  }, []);
+  }, [logout, navigate]);
 
   const handleSetupComplete = (
     newFolderId: string,
