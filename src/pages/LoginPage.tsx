@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { getOAuthClient } from '@/services/auth/google-oauth-client';
@@ -14,10 +14,14 @@ import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const { t } = useTranslation('auth');
   const [isLoading, setIsLoading] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(false);
+
+  // Already logged in — skip the login page
+  if (authLoading) return null; // wait for auth state to resolve
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const benefits = t('login.benefits', { returnObjects: true }) as string[];
 
