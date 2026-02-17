@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
-    strictPort: true, // fail instead of auto-bumping to 3001, 3002, etc.
+    port: 5173,
+    strictPort: true, // fail instead of auto-bumping to another port
   },
 })
