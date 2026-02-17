@@ -7,6 +7,11 @@
     "cta": "Adaugă Prima Clasă"
   },
   "add_class_button": "Adaugă Clasă",
+  "form": {
+    "reuse_banner": "Există deja {{count}} elevi pentru {{className}} ({{year}}). Refolosești lista?",
+    "reuse_yes": "Da, refolosește",
+    "reuse_no": "Nu, listă nouă"
+  },
   "wizard": {
     "title": "Adaugă Clasă Nouă",
     "step1_title": "Selectează Materia",

@@ -190,7 +190,10 @@ export default function ClassesPage() {
               })}
             </p>
           </div>
-          <Button onClick={() => setShowAddDialog(true)} className="shadow-lg">
+          <Button
+            onClick={() => setShowAddDialog(true)}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white border-0 shadow-lg"
+          >
             <Plus className="h-4 w-4 mr-2" />
             {t('add_class_button')}
           </Button>

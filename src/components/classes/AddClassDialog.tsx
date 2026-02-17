@@ -1,14 +1,14 @@
 /**
- * Add Class Dialog - Multi-step wizard
- * Steps: 1. Subject, 2. School Year, 3. Class Name, 4. Students
+ * Add Class Dialog - Single-screen form
+ * Row 1: Subject | Row 2: School Year + Grade + Class Name | Row 3: Students textarea
+ * Smart roster reuse: if year+grade+className exists for another subject, prompt to reuse
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, ChevronRight, ChevronLeft, Sparkles, Users, BookOpen, Calendar } from 'lucide-react';
+import { Loader2, Sparkles, Users } from 'lucide-react';
 import { PREDEFINED_SUBJECTS, DEFAULT_SUBJECT, getSubjectName } from '@/constants/subjects';
 import { localSheetsService } from '@/services/google/local-sheets-service';
 import { toast } from 'sonner';
@@ -34,150 +34,119 @@ interface AddClassDialogProps {
   onSuccess: () => void;
 }
 
-type WizardStep = 1 | 2 | 3 | 4;
-
-interface FormData {
-  subject: string;
-  isCustomSubject: boolean;
-  schoolYear: string;
-  className: string;
-  gradeLevel: number;
-  students: string[]; // Array of student names
-}
-
 export default function AddClassDialog({ open, onClose, onSuccess }: AddClassDialogProps) {
   const { t, i18n } = useTranslation('classes');
   const currentLang = i18n.language as 'ro' | 'en';
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
 
-  // Default school year (Sept-Aug academic calendar)
   const defaultSchoolYear = currentMonth >= 8
     ? `${currentYear}-${currentYear + 1}`
     : `${currentYear - 1}-${currentYear}`;
 
-  const [step, setStep] = useState<WizardStep>(1);
+  const [subject, setSubject] = useState(getSubjectName(DEFAULT_SUBJECT, currentLang));
+  const [isCustomSubject, setIsCustomSubject] = useState(false);
+  const [schoolYear, setSchoolYear] = useState(defaultSchoolYear);
+  const [gradeLevel, setGradeLevel] = useState(5);
+  const [className, setClassName] = useState('');
+  const [studentText, setStudentText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [existingStudents, setExistingStudents] = useState<string[]>([]);
-  const [classExists, setClassExists] = useState(false);
 
-  const [formData, setFormData] = useState<FormData>({
-    subject: getSubjectName(DEFAULT_SUBJECT, currentLang),
-    isCustomSubject: false,
-    schoolYear: defaultSchoolYear,
-    className: '',
-    gradeLevel: 5,
-    students: [],
-  });
+  // Roster reuse
+  const [existingStudents, setExistingStudents] = useState<string[]>([]);
+  const [reuseAnswer, setReuseAnswer] = useState<'yes' | 'no' | null>(null);
+  const reuseCheckRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset on close
   useEffect(() => {
     if (!open) {
-      setStep(1);
-      setFormData({
-        subject: getSubjectName(DEFAULT_SUBJECT, currentLang),
-        isCustomSubject: false,
-        schoolYear: defaultSchoolYear,
-        className: '',
-        gradeLevel: 5,
-        students: [],
-      });
+      setSubject(getSubjectName(DEFAULT_SUBJECT, currentLang));
+      setIsCustomSubject(false);
+      setSchoolYear(defaultSchoolYear);
+      setGradeLevel(5);
+      setClassName('');
+      setStudentText('');
       setExistingStudents([]);
-      setClassExists(false);
+      setReuseAnswer(null);
     }
   }, [open]);
 
-  // Check if class exists when we reach step 4
+  // Debounced roster check when year/grade/class changes
   useEffect(() => {
-    if (step === 4 && formData.className && formData.schoolYear) {
-      checkExistingClass();
-    }
-  }, [step]);
+    if (reuseCheckRef.current) clearTimeout(reuseCheckRef.current);
+    setExistingStudents([]);
+    setReuseAnswer(null);
 
-  const checkExistingClass = async () => {
-    try {
-      setLoading(true);
-      const students = await localSheetsService.getStudents();
-      const existingForClass = students.filter(
-        s => s.class_name === formData.className && s.school_year === formData.schoolYear
-      );
+    const trimmed = className.trim();
+    if (!trimmed || !schoolYear) return;
 
-      if (existingForClass.length > 0) {
-        setClassExists(true);
-        setExistingStudents(existingForClass.map(s => s.name));
-        setFormData(prev => ({ ...prev, students: existingForClass.map(s => s.name) }));
-      } else {
-        setClassExists(false);
-        setExistingStudents([]);
+    reuseCheckRef.current = setTimeout(async () => {
+      try {
+        const students = await localSheetsService.getStudents();
+        const found = students.filter(
+          s => s.class_name === trimmed && s.school_year === schoolYear
+        );
+        if (found.length > 0) {
+          setExistingStudents(found.map(s => s.name));
+        }
+      } catch {
+        // non-blocking
       }
-    } catch (error) {
-      console.error('Failed to check existing class:', error);
-    } finally {
-      setLoading(false);
+    }, 400);
+
+    return () => {
+      if (reuseCheckRef.current) clearTimeout(reuseCheckRef.current);
+    };
+  }, [schoolYear, gradeLevel, className]);
+
+  // When user picks "yes", fill textarea; "no" clears it
+  useEffect(() => {
+    if (reuseAnswer === 'yes') {
+      setStudentText(existingStudents.join('\n'));
+    } else if (reuseAnswer === 'no') {
+      setStudentText('');
     }
-  };
+  }, [reuseAnswer]);
 
   const handleSubjectChange = (value: string) => {
     if (value === 'custom') {
-      setFormData(prev => ({ ...prev, isCustomSubject: true, subject: '' }));
+      setIsCustomSubject(true);
+      setSubject('');
     } else {
-      setFormData(prev => ({ ...prev, isCustomSubject: false, subject: value }));
+      setIsCustomSubject(false);
+      setSubject(value);
     }
   };
 
-  const handleBulkStudentInput = (text: string) => {
-    const names = text
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0);
-    setFormData(prev => ({ ...prev, students: names }));
-  };
+  const parsedStudents = studentText
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
 
-  const canProceed = () => {
-    switch (step) {
-      case 1:
-        return formData.subject.trim().length > 0;
-      case 2:
-        return formData.schoolYear.trim().length > 0;
-      case 3:
-        return formData.className.trim().length > 0 && formData.gradeLevel >= 5 && formData.gradeLevel <= 8;
-      case 4:
-        return formData.students.length > 0;
-      default:
-        return false;
-    }
-  };
-
-  const handleNext = () => {
-    if (step < 4) {
-      setStep((step + 1) as WizardStep);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (step > 1) {
-      setStep((step - 1) as WizardStep);
-    }
-  };
+  const isValid =
+    subject.trim().length > 0 &&
+    schoolYear.trim().length > 0 &&
+    className.trim().length > 0 &&
+    parsedStudents.length > 0;
 
   const handleSubmit = async () => {
+    if (!isValid) return;
     try {
       setLoading(true);
 
-      // Create class
       await localSheetsService.createClass({
-        subject: formData.subject,
-        class_name: formData.className,
-        grade_level: formData.gradeLevel,
-        school_year: formData.schoolYear,
+        subject: subject.trim(),
+        class_name: className.trim(),
+        grade_level: gradeLevel,
+        school_year: schoolYear,
       });
 
-      // Add students if they don't exist for this class_name + year
-      if (!classExists) {
-        for (const studentName of formData.students) {
+      // Only write new student rows when not reusing existing ones
+      if (reuseAnswer !== 'yes') {
+        for (const studentName of parsedStudents) {
           await localSheetsService.createStudent({
-            class_name: formData.className,
-            school_year: formData.schoolYear,
+            class_name: className.trim(),
+            school_year: schoolYear,
             name: studentName,
           });
         }
@@ -185,8 +154,8 @@ export default function AddClassDialog({ open, onClose, onSuccess }: AddClassDia
 
       toast.success(t('wizard.success', {
         defaultValue: 'Class created successfully!',
-        subject: formData.subject,
-        className: formData.className,
+        subject: subject.trim(),
+        className: className.trim(),
       }));
 
       onSuccess();
@@ -199,76 +168,62 @@ export default function AddClassDialog({ open, onClose, onSuccess }: AddClassDia
     }
   };
 
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{t('wizard.step1_title')}</h3>
-                <p className="text-sm text-gray-600">{t('wizard.step1_subtitle')}</p>
-              </div>
-            </div>
+  const showReusePrompt = existingStudents.length > 0 && reuseAnswer === null;
 
-            <div className="space-y-3">
-              <Label htmlFor="subject">{t('wizard.subject_label')}</Label>
-              {!formData.isCustomSubject ? (
-                <Select value={formData.subject} onValueChange={handleSubjectChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('wizard.subject_placeholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PREDEFINED_SUBJECTS.map((subject) => (
-                      <SelectItem key={subject.id} value={subject[currentLang]}>
-                        {subject[currentLang]}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="custom" className="text-blue-600 font-medium">
-                      + {t('wizard.custom_subject_label')}
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-purple-600" />
+            {t('wizard.title')}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-5 py-2">
+          {/* Row 1: Subject */}
+          <div className="space-y-1.5">
+            <Label>{t('wizard.subject_label')}</Label>
+            {!isCustomSubject ? (
+              <Select value={subject} onValueChange={handleSubjectChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('wizard.subject_placeholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {PREDEFINED_SUBJECTS.map((s) => (
+                    <SelectItem key={s.id} value={s[currentLang]}>
+                      {s[currentLang]}
                     </SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="space-y-2">
-                  <Input
-                    id="custom-subject"
-                    value={formData.subject}
-                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                    placeholder={t('wizard.custom_subject_placeholder')}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSubjectChange(getSubjectName(DEFAULT_SUBJECT, currentLang))}
-                  >
-                    ← {t('wizard.back_to_predefined', { defaultValue: 'Back to predefined subjects' })}
-                  </Button>
-                </div>
-              )}
-            </div>
+                  ))}
+                  <SelectItem value="custom" className="text-purple-600 font-medium">
+                    + {t('wizard.custom_subject_label')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="flex gap-2">
+                <Input
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder={t('wizard.custom_subject_placeholder')}
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { setIsCustomSubject(false); setSubject(getSubjectName(DEFAULT_SUBJECT, currentLang)); }}
+                >
+                  ✕
+                </Button>
+              </div>
+            )}
           </div>
-        );
 
-      case 2:
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{t('wizard.step2_title')}</h3>
-                <p className="text-sm text-gray-600">{t('wizard.step2_subtitle')}</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="schoolYear">{t('wizard.year_label')}</Label>
-              <Select value={formData.schoolYear} onValueChange={(value) => setFormData(prev => ({ ...prev, schoolYear: value }))}>
+          {/* Row 2: Year + Grade + Class Name inline */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <Label>{t('wizard.year_label')}</Label>
+              <Select value={schoolYear} onValueChange={setSchoolYear}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -280,179 +235,110 @@ export default function AddClassDialog({ open, onClose, onSuccess }: AddClassDia
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        );
 
-      case 3:
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{t('wizard.step3_title')}</h3>
-                <p className="text-sm text-gray-600">{t('wizard.step3_subtitle')}</p>
-              </div>
+            <div className="space-y-1.5">
+              <Label>{t('wizard.grade_level_label')}</Label>
+              <Select
+                value={gradeLevel.toString()}
+                onValueChange={(v) => setGradeLevel(parseInt(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="6">6</SelectItem>
+                  <SelectItem value="7">7</SelectItem>
+                  <SelectItem value="8">8</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="className">{t('wizard.class_name_label')}</Label>
-                <Input
-                  id="className"
-                  value={formData.className}
-                  onChange={(e) => setFormData(prev => ({ ...prev, className: e.target.value.toUpperCase() }))}
-                  placeholder={t('wizard.class_name_placeholder')}
-                  className="text-lg font-semibold"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label>{t('wizard.class_name_label')}</Label>
+              <Input
+                value={className}
+                onChange={(e) => setClassName(e.target.value.toUpperCase())}
+                placeholder={t('wizard.class_name_placeholder')}
+                className="font-semibold"
+              />
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="gradeLevel">{t('wizard.grade_level_label')}</Label>
-                <Select
-                  value={formData.gradeLevel.toString()}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, gradeLevel: parseInt(value) }))}
+          {/* Row 3: Roster reuse prompt or textarea */}
+          {showReusePrompt ? (
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-blue-800">
+                <Users className="h-4 w-4 shrink-0" />
+                <span className="text-sm font-medium">
+                  {t('form.reuse_banner', {
+                    defaultValue: '{{count}} students already exist for {{className}} ({{year}}). Reuse this roster?',
+                    count: existingStudents.length,
+                    className: className.trim(),
+                    year: schoolYear,
+                  })}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => setReuseAnswer('yes')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="6">6</SelectItem>
-                    <SelectItem value="7">7</SelectItem>
-                    <SelectItem value="8">8</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {t('form.reuse_yes', { defaultValue: 'Yes, reuse' })}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setReuseAnswer('no')}
+                >
+                  {t('form.reuse_no', { defaultValue: 'No, start fresh' })}
+                </Button>
               </div>
             </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                <Users className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{t('wizard.step4_title')}</h3>
-                <p className="text-sm text-gray-600">{t('wizard.step4_subtitle')}</p>
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              </div>
-            ) : classExists ? (
-              <div className="space-y-3">
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900">
-                    {t('wizard.existing_class_notice', {
-                      className: formData.className,
-                      year: formData.schoolYear
-                    })}
-                  </p>
-                  <p className="text-sm font-semibold text-blue-700 mt-1">
-                    {t('wizard.existing_students_count', { count: existingStudents.length })}
-                  </p>
-                </div>
-                <div className="max-h-48 overflow-y-auto bg-gray-50 rounded-lg p-4 space-y-1">
-                  {existingStudents.map((name, idx) => (
-                    <div key={idx} className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="w-6 text-gray-400">{idx + 1}.</span>
-                      <span>{name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2">
+          ) : (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
                 <Label htmlFor="students">{t('wizard.bulk_input_label')}</Label>
-                <textarea
-                  id="students"
-                  className="w-full min-h-[200px] p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-                  placeholder={t('wizard.bulk_input_placeholder')}
-                  value={formData.students.join('\n')}
-                  onChange={(e) => handleBulkStudentInput(e.target.value)}
-                />
-                <p className="text-xs text-gray-500">{t('wizard.bulk_input_help')}</p>
-                {formData.students.length > 0 && (
-                  <p className="text-sm font-medium text-blue-600">
-                    {formData.students.length} {formData.students.length === 1 ? 'student' : 'students'}
-                  </p>
+                {parsedStudents.length > 0 && (
+                  <span className="text-xs text-purple-600 font-medium">
+                    {parsedStudents.length} {parsedStudents.length === 1 ? 'student' : 'students'}
+                  </span>
                 )}
               </div>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-blue-600" />
-            {t('wizard.title')}
-          </DialogTitle>
-          <DialogDescription>
-            {t('wizard.step_indicator', { defaultValue: `Step ${step} of 4`, step })}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="py-4">
-          {/* Progress Indicator */}
-          <div className="flex gap-2 mb-6">
-            {[1, 2, 3, 4].map((s) => (
-              <div
-                key={s}
-                className={`h-1 flex-1 rounded-full transition-all ${
-                  s <= step ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gray-200'
-                }`}
+              <textarea
+                id="students"
+                className="w-full min-h-[180px] p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm resize-none"
+                placeholder={t('wizard.bulk_input_placeholder')}
+                value={studentText}
+                onChange={(e) => setStudentText(e.target.value)}
               />
-            ))}
-          </div>
-
-          {renderStepContent()}
+              <p className="text-xs text-gray-500">{t('wizard.bulk_input_help')}</p>
+            </div>
+          )}
         </div>
 
-        <DialogFooter className="flex gap-2">
-          {step > 1 && (
-            <Button variant="ghost" onClick={handlePrevious} disabled={loading}>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              {t('wizard.previous')}
-            </Button>
-          )}
-
-          <div className="flex-1" />
-
-          {step < 4 ? (
-            <Button onClick={handleNext} disabled={!canProceed() || loading}>
-              {t('wizard.next')}
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={!canProceed() || loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('wizard.creating', { defaultValue: 'Creating...' })}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {t('wizard.create')}
-                </>
-              )}
-            </Button>
-          )}
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={loading}>
+            {t('wizard.cancel')}
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!isValid || loading || showReusePrompt}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white border-0"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {t('wizard.creating', { defaultValue: 'Creating...' })}
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4 mr-2" />
+                {t('wizard.create')}
+              </>
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

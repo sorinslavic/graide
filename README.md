@@ -23,8 +23,8 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 - **Google OAuth Authentication**: Secure login with Drive & Sheets permissions; "Keep me signed in" option (sessionStorage vs localStorage)
 - **Workspace Setup**: Automated workspace initialization with Drive folder + spreadsheet
 - **Google Sheets Database**: 8 sheets (README, Classes, Students, Tests, Results, Mistakes, Rubrics, Config)
-- **Subject-Based Class Management**: 4-step wizard for creating classes with subject selection (12 predefined Romanian subjects + custom), school year, class name, and student roster management
-- **Shared Student Rosters**: Multiple subjects can share the same class roster (e.g., Math-5A and Romanian-5A both use "5A" students)
+- **Subject-Based Class Management**: Single-screen dialog for creating classes — subject, year, grade level, class name, and student roster all on one form with smart roster reuse detection
+- **Shared Student Rosters**: Multiple subjects can share the same class roster (e.g., Math-5A and Romanian-5A both use "5A" students); when an existing roster is detected the app prompts to reuse or start fresh
 - **Bulk Student Input**: Paste student names (one per line) or reuse existing rosters
 - **Multi-language Support**: Romanian (default) and English with persistent language selection — fully applied across login, dashboard, and class management
 - **Account Management**: View all configuration, reset workspace, logout
@@ -87,6 +87,8 @@ grAIde combines **grading** with **AI** to help teachers save time and provide b
 ## Recent Updates
 
 ### February 2026
+- **🪄 Single-Screen Class Creation**: Replaced 4-step wizard with a compact single-form dialog — subject dropdown, school year + grade level + class name inline on one row, and a large student names textarea; smart roster-reuse detection prompts "Reuse students?" when the same class already exists for another subject
+- **🎨 Gradient Action Buttons**: "Add Class" button now uses the app's purple→pink gradient design system instead of the default dark colour
 - **🔢 Schema Version Tracking**: Code now tracks a `SCHEMA_VERSION` constant (currently v2). On every dashboard load, the stored version in the Config sheet is compared to the code version. If outdated, a reconciliation runs automatically: missing sheets are created, README content is refreshed, and the version is bumped — no manual intervention needed. Bump `SCHEMA_VERSION` whenever sheet structure changes.
 - **🗑️ Trash-Aware Initialization**: Dashboard now verifies cached Drive/Sheets IDs against the Drive API on load — if the spreadsheet was moved to trash, the stale cache is cleared and a "Recreate Workspace" prompt appears instead of silently using the deleted file
 - **🎨 Gradient Header & Navigation**: Full-width purple/pink/rose gradient header replacing the plain white bar — includes app logo, navigation links (Dashboard, Classes, Inbox, Analytics) with active state highlighting, language switcher, and avatar account menu styled for the gradient background; mobile-responsive with horizontal scroll nav

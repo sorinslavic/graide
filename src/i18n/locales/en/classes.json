@@ -7,6 +7,11 @@
     "cta": "Add Your First Class"
   },
   "add_class_button": "Add Class",
+  "form": {
+    "reuse_banner": "{{count}} students already exist for {{className}} ({{year}}). Reuse this roster?",
+    "reuse_yes": "Yes, reuse",
+    "reuse_no": "No, start fresh"
+  },
   "wizard": {
     "title": "Add New Class",
     "step1_title": "Select Subject",

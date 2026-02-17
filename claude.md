@@ -4,9 +4,9 @@
 
 ## Project Status
 
-**Current Phase:** Specification Complete → Ready for Development
-**Next Milestone:** Project scaffold (React + Vite + TypeScript)
-**No source code yet** - all documentation complete, implementation pending
+**Current Phase:** Milestone 2 Complete → Milestone 3 (Photo Inbox) Next
+**Completed:** Scaffold, Auth + Google APIs, Class & Student Management
+**Next Milestone:** Photo Inbox — bulk upload, assign photos to students, Drive organisation
 
 **UI Design Reference:** Lovable-generated mock at https://github.com/sorinslavic/grade-grader-hero
 - Beautiful 3-column grading interface (thumbnails | canvas | comments)
@@ -329,6 +329,21 @@ Follow conventional commits:
 - `claude/*` - AI-generated features
 - `feature/*` - human developer features
 - `fix/*` - bug fixes
+
+### ⚠️ Schema Version — CRITICAL RULE
+
+`SCHEMA_VERSION` lives in `src/services/google/local-sheets-service.ts`.
+
+**You MUST bump it (increment by 1) whenever you change:**
+- `SHEET_SCHEMAS` — adding a new sheet tab, adding or renaming columns
+- `populateReadme()` — any change to README sheet content
+- Default data written to sheets during initialization
+
+When bumped, `reconcileSchema()` runs automatically on next dashboard load for all users, creating missing sheets and refreshing the README. It never deletes data.
+
+Also update the version history table in `docs/development.md`.
+
+See `docs/development.md` → **Schema Versioning** for the full reference.
 
 ## Environment Variables
 
