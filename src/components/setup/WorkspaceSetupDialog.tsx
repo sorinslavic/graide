@@ -5,6 +5,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +21,8 @@ import { Label } from '@/components/ui/label';
 import { Loader2, FolderOpen, Sheet, CheckCircle2, AlertCircle } from 'lucide-react';
 import { initializationService } from '@/services/initialization-service';
 import { localDriveService } from '@/services/google/local-drive-service';
+import { AuthExpiredError } from '@/services/auth/google-auth-service';
+import { useAuth } from '@/hooks/use-auth';
 
 interface WorkspaceSetupDialogProps {
   open: boolean;
@@ -37,6 +41,8 @@ export default function WorkspaceSetupDialog({
   onError,
 }: WorkspaceSetupDialogProps) {
   const { t } = useTranslation('setup');
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [folderUrl, setFolderUrl] = useState('');
   const [folderId, setFolderId] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -87,6 +93,12 @@ export default function WorkspaceSetupDialog({
         onComplete(extractedId, result.spreadsheetId!, result.organizedFolderId!);
       }, 1500);
     } catch (err) {
+      if (err instanceof AuthExpiredError) {
+        toast.error('Session expired. Please sign in again.');
+        await logout();
+        navigate('/login');
+        return;
+      }
       console.error('❌ Workspace setup failed:', err);
       setIsInitializing(false);
       setStep('input');

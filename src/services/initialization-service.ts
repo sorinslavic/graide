@@ -5,6 +5,7 @@
 
 import { localDriveService } from './google/local-drive-service';
 import { localSheetsService, SCHEMA_VERSION } from './google/local-sheets-service';
+import { AuthExpiredError } from './auth/google-auth-service';
 
 export interface InitializationStatus {
   isInitialized: boolean;
@@ -71,6 +72,7 @@ export class InitializationService {
         organizedFolderId,
       };
     } catch (error) {
+      if (error instanceof AuthExpiredError) throw error; // let callers handle re-auth
       console.error('❌ Initialization failed:', error);
       return {
         isInitialized: false,
@@ -93,6 +95,10 @@ export class InitializationService {
     if (!folderId) {
       return { isInitialized: false, error: 'No Drive folder configured' };
     }
+
+    // Always verify the token is valid by probing the Drive folder.
+    // This ensures a 401 bubbles up as AuthExpiredError regardless of cached state.
+    await localDriveService.isFileTrashed(folderId);
 
     // Verify spreadsheet isn't trashed
     if (spreadsheetId) {
