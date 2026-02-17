@@ -5,12 +5,13 @@
 | Milestone | Status | Description |
 |-----------|--------|-------------|
 | 0: Scaffold | ✅ Complete | React + Vite + TypeScript + shadcn/ui, service layer, routing |
-| 1: Auth + APIs | ✅ Complete | Google OAuth, Sheets CRUD (8 sheets), Drive operations, workspace init |
-| 2: Class Management | ✅ Complete | Full class/student CRUD, i18n (RO/EN), vibrant gradient UI |
-| 3: Photo Inbox | 🚧 Next | Bulk photo upload, assign to students, Drive organisation |
-| 4: AI Grading | ⏳ Pending | Gemini Vision integration, handwriting recognition |
-| 5: Teacher Review | ⏳ Pending | Side-by-side photo vs AI, grade overrides, annotations |
-| 6: Analytics | ⏳ Pending | Mistake patterns, student trends, charts |
+| 1: Auth + APIs | ✅ Complete | Google OAuth, Sheets CRUD, Drive operations, workspace init, schema versioning |
+| 2: Class & Student Management | ✅ Complete | Full CRUD, single-form dialog with smart roster reuse, i18n RO/EN |
+| 3: Tests & Submissions | ✅ Complete | Test creation, absence marking, submission data model (schema v3) |
+| 4: Photo Inbox & Views | 🚧 Next | Inbox listing, photo→submission assignment, test/student/submission detail views |
+| 5: AI Grading | ⏳ Pending | Gemini Vision integration, handwriting recognition, SubmissionDetails |
+| 6: Teacher Review | ⏳ Pending | Side-by-side photo vs AI, grade overrides, annotations |
+| 7: Analytics | ⏳ Pending | Mistake patterns, student trends, score distribution charts |
 
 ---
 
@@ -49,8 +50,8 @@ npm install
 1. Go to "APIs & Services" → "Credentials"
 2. Click "Create Credentials" → "OAuth client ID"
 3. Application type: "Web application"
-4. Authorized JavaScript origins: `http://localhost:3000`
-5. Authorized redirect URIs: `http://localhost:3000`
+4. Authorized JavaScript origins: `http://localhost:5173`
+5. Authorized redirect URIs: `http://localhost:5173`
 6. Copy Client ID and Client Secret
 
 **C. Create `.env` File**
@@ -64,7 +65,7 @@ VITE_GOOGLE_CLIENT_SECRET=your_client_secret_here
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
 
 # App Config
-VITE_APP_URL=http://localhost:3000
+VITE_APP_URL=http://localhost:5173
 ```
 
 ⚠️ **Never commit `.env` to git** - it's already in `.gitignore`
@@ -82,7 +83,7 @@ VITE_APP_URL=http://localhost:3000
 npm run dev
 ```
 
-App will open at `http://localhost:3000`
+App will open at `http://localhost:5173`
 
 #### 6. First Login & Setup
 1. Click "Login with Google"
@@ -245,14 +246,23 @@ instead — no component changes needed.
 ## Testing
 
 ### Manual Testing Checklist
-- [x] **OAuth login flow works** (Phase 1 ✅)
-- [ ] Can create/edit classes (Phase 5)
-- [ ] Can add/edit students (Phase 5)
-- [ ] Can upload test photos to Drive (Milestone 2)
-- [ ] AI grading produces correct results (Milestone 3)
-- [ ] Grades save to Sheets correctly (Phase 2)
-- [ ] Analytics dashboard displays data (Milestone 5)
-- [ ] Can edit data in Sheets and see changes in app (Phase 2)
+- [x] OAuth login + "Keep me signed in"
+- [x] Expired session → auto-logout + redirect to login
+- [x] Workspace init — creates spreadsheet + organized/ folder
+- [x] Schema auto-migration (reconcileSchema)
+- [x] Create / list / delete classes
+- [x] Bulk student import
+- [x] Smart roster reuse detection
+- [x] Create test (multi-class, types, grading systems)
+- [x] Auto-bulk-create submissions for all students
+- [x] Absence marking dialog (per class, batch save)
+- [ ] Photo inbox — list new Drive photos (Milestone 4)
+- [ ] Assign photo to student submission (Milestone 4)
+- [ ] Test detail page with submission list (Milestone 4)
+- [ ] Submission detail with photo gallery (Milestone 4)
+- [ ] AI grading produces correct results (Milestone 5)
+- [ ] Teacher review + grade overrides (Milestone 6)
+- [ ] Analytics dashboard displays data (Milestone 7)
 
 ### Automated Testing (Future)
 - Unit tests: `npm run test`
@@ -285,81 +295,103 @@ When ready to deploy to cloud:
 
 ## Development Phases
 
-### Phase 1: Planning & Design ✅
-- [x] Define core features
-- [x] Choose technology stack (React + Vite + Google Sheets/Drive)
-- [x] Design architecture (local-first, Google APIs)
-- [x] Complete specification (6/6 questions answered)
-- [x] Define data models (Google Sheets schema)
-- [x] UI design reference (Lovable mock analyzed and documented)
+### ✅ Completed Milestones
 
-### Phase 2: MVP Development (Current)
+**Milestone 0: Project Scaffold**
+- React + Vite + TypeScript + shadcn/ui + Tailwind CSS
+- Service layer with TypeScript interfaces (Auth, Sheets, Drive, AI)
+- Routing, i18n (RO/EN), environment config
 
-**Milestone 0: Project Scaffold ✅ COMPLETE**
-- [x] Initialize React + Vite + TypeScript project
-- [x] Set up folder structure (components/, services/, hooks/, types/)
-- [x] Configure ESLint, Prettier, Tailwind CSS
-- [x] Create `.env.example` with required variables
-- [x] Define complete type system (sheets, grading, drive)
-- [x] Create service layer interfaces (Auth, Sheets, Drive, AI)
-- [x] Set up routing with 7 page placeholders
-- [x] Add shadcn/ui components (button, card)
-- [x] Verify build and dev server work successfully
-- [x] Document scaffold in SCAFFOLD.md and claude.md
-
-**Status:** 917 lines of TypeScript code, builds successfully, dev server runs at localhost:5173
-
-**Milestone 1: Auth + Google APIs (Sheets/Drive) 🚧 NEXT**
-- [ ] Implement Google OAuth login service (interface + implementation)
-- [ ] Implement Google Sheets service (CRUD operations)
-- [ ] Implement Google Drive service (upload/download/list)
-- [ ] Auto-create "graide-data" spreadsheet with 7 sheets on first login
-- [ ] Build Class & Student management UI (simple forms)
+**Milestone 1: Auth + Google APIs**
+- Google OAuth 2.0 login with "Keep me signed in"
+- Google Sheets service — full CRUD for all sheets
+- Google Drive service — list, upload, move, trash detection
+- Workspace init — auto-creates spreadsheet + `organized/` subfolder
+- Schema versioning — `SCHEMA_VERSION` + `reconcileSchema()` for safe migrations
+- Auth expiry handling — 401 → logout + redirect to login
 
 **Milestone 2: Class & Student Management**
-- [ ] Build class management UI (create/edit/delete classes)
-- [ ] Build student management UI (create/edit/delete students)
-- [ ] Wire UI to Sheets service for persistence
+- Create/list/delete classes (subject, year, grade level, class name)
+- Single-form dialog with smart roster reuse detection
+- Bulk student input (one name per line)
+- Full i18n RO/EN across all UI
 
-**Milestone 3: Test Setup & Photo Upload**
-- [ ] Build test creation UI (name, date, questions, points per question)
-- [ ] Build photo upload interface (single + batch)
-- [ ] Implement Drive folder organization (year/class/test/)
-- [ ] Associate uploaded photos with students
+**Milestone 3: Tests & Submissions**
+- Test model: name, type (test/homework/project/quiz), class_ids (CSV), dates, grading system
+- Submission model: one per student×test, status flow `new → correcting → corrected | absent`
+- `bulkCreateSubmissions` — auto-creates submissions for all students in a class on test creation
+- Tests page: timeline view (This Week / Last Week / older), Active/Archived tabs, type-based gradient cards
+- Create test dialog: multi-class select, deadline auto-lock for in-class tests
+- Absence marking dialog: per-class student roster, checkbox toggles, batch save
 
-**Milestone 4: AI Grading Engine**
-- [ ] Define AI grading service interface
-- [ ] Implement local AI service (direct Gemini Vision calls)
-- [ ] Build prompt engineering for math grading (answer key + photo → evaluation)
-- [ ] Parse AI responses into structured grade + mistake data
-- [ ] Store results in Grades + Mistakes sheets
+---
 
-**Milestone 5: Teacher Review & Adjustment Interface**
-- [ ] Build side-by-side view (original photo vs AI evaluation)
-- [ ] Implement grade override and partial credit adjustments
-- [ ] Add approve/reject per question
-- [ ] Add teacher comments per question or paper
+### 🚧 Milestone 4: Photo Inbox & Views (NEXT — start here)
 
-**Milestone 6: Analytics Dashboard**
-- [ ] Build class-wide mistake pattern view
-- [ ] Build per-student error history
-- [ ] Build score distribution charts
-- [ ] Implement quick lookup ("What did Student X get wrong on Test Y?")
+Teacher uploads photos to Drive root folder from phone. App needs to:
+1. Detect new photos in root folder
+2. Let teacher assign each photo to a test → student
+3. Show submission details (photos + grade) per student and per test
 
-### Phase 3: Refinement
-- [ ] User feedback integration (teacher testing)
-- [ ] Performance optimization
-- [ ] Error handling improvements
-- [ ] UI/UX polish
-- [ ] Additional features from feedback
-- [ ] Documentation completion
+#### Task breakdown
 
-### Phase 4: Launch
-- [ ] Beta testing with multiple teachers
-- [ ] Bug fixes from beta
-- [ ] Production deployment (if cloud hosting)
-- [ ] Monitoring and support setup
-- [ ] User onboarding materials
+**Task 15 — Photo Inbox: list unassigned Drive photos**
+- Drive service: list files in root folder excluding `organized/` subfolder
+- Badge count on Inbox nav item
+- Inbox page: thumbnail grid, file name, upload date, "Assign" button per photo
+
+**Task 16 — Photo assignment flow**
+- "Assign" opens a dialog: pick test → pick class → pick student
+- On confirm: move file to `organized/{year}/{class}/{test}/{student}.jpg`
+- Update `Submission.drive_file_ids` (append to CSV)
+- Status: if first photo on submission, set `new → correcting`
+- Multiple photos per student supported
+
+**Task 17 — Test detail page `/tests/:testId`**
+- Click a test card → detail view
+- Grouped by class: full student list with status badge, photo count, grade
+- Quick inline actions: mark absent, open submission
+- Route: `/tests/:testId`
+
+**Task 18 — Submission detail view**
+- Single student's submission: all photos (from `drive_file_ids`), status timeline, grade, notes
+- SubmissionDetails list (mistakes) — read-only until AI milestone
+- Route: `/tests/:testId/submissions/:submissionId`
+
+**Task 19 — Student history view**
+- All submissions across all tests for one student
+- Per row: test name, date, status, grade, photo count → click → submission detail
+- Route: `/students/:studentId`
+
+**Task 20 — Class roster view**
+- Click a class card → roster showing all students
+- Per student: name, tests taken, last test date, avg grade → click → student history
+- Route: `/classes/:classId`
+
+---
+
+### ⏳ Milestone 5: AI Grading
+
+- Gemini Vision API integration (direct browser calls, free tier)
+- Prompt engineering for math handwriting recognition
+- Send photos + rubric → get back score + mistake list
+- Parse response into SubmissionDetails rows
+- Trigger from submission detail page ("Grade with AI" button)
+
+### ⏳ Milestone 6: Teacher Review Interface
+
+- Side-by-side: photo on left, AI result on right
+- Override score per question
+- Approve / adjust mistakes
+- Teacher notes
+- Status: `correcting → corrected` on approval
+
+### ⏳ Milestone 7: Analytics Dashboard
+
+- Class-wide mistake pattern charts (which questions everyone missed)
+- Per-student error history over time
+- Score distribution per test
+- Recharts visualisations
 
 ---
 
@@ -418,7 +450,7 @@ npm install <package-name>@latest
 ### Issue: OAuth login fails
 **Solution**:
 - Check Client ID in `.env` matches Google Cloud Console
-- Verify redirect URI is `http://localhost:3000`
+- Verify redirect URI is `http://localhost:5173`
 - Clear browser cookies and try again
 
 ### Issue: Sheets API "Permission Denied"
